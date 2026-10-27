@@ -59,9 +59,9 @@ const s = StyleSheet.create({
 export function Backdrop() {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <LinearGradient colors={DARK ? ['#0B1220', '#0D1B2A', '#0B1F1A'] : ['#EEF7F1', '#F3F5F9', '#EAF3FB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={[DARK ? 'rgba(16,185,129,0.16)' : 'rgba(134,239,172,0.45)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['transparent', DARK ? 'rgba(14,165,233,0.12)' : 'rgba(125,211,252,0.4)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={DARK ? ['#0B1220', '#0E1626', '#120F1E'] : ['#EEF4FB', '#F5F6FA', '#FBF1EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[DARK ? 'rgba(56,189,248,0.14)' : 'rgba(186,230,253,0.7)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['transparent', DARK ? 'rgba(251,146,60,0.08)' : 'rgba(254,215,170,0.5)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
       <LinearGradient colors={['transparent', DARK ? 'rgba(244,114,182,0.07)' : 'rgba(251,207,232,0.45)']} start={{ x: 0.3, y: 0.5 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
     </View>
   );

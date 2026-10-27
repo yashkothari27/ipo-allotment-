@@ -161,7 +161,7 @@ const s = StyleSheet.create({
   emptyIcon: { width: 60, height: 60, borderRadius: 20, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
   emptyTitle: { fontFamily: F.bold, fontSize: 17, color: C.text },
   emptyText: { fontFamily: F.regular, fontSize: 14, lineHeight: 21, color: C.muted, textAlign: 'center' },
-  fab: { position: 'absolute', right: 16, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.accent, borderRadius: 18, paddingHorizontal: 20, minHeight: 56, shadowColor: '#047857', shadowOpacity: 0.3, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
+  fab: { position: 'absolute', right: 16, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.accent, borderRadius: 18, paddingHorizontal: 20, minHeight: 56, shadowColor: '#0F172A', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
   fabText: { fontFamily: F.bold, fontSize: 16, color: ON_ACCENT },
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,8,23,0.5)' },
   sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20 },

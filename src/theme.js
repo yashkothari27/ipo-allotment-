@@ -5,12 +5,12 @@ export const DARK = Appearance.getColorScheme() === 'dark';
 
 const LIGHT_C = {
   bg: '#F3F5F9', card: '#FFFFFF', text: '#0F172A', muted: '#475569', faint: '#94A3B8', border: '#E2E8F0',
-  ink: '#0B3B2E', accent: '#047857', accentSoft: '#E3F6EC', lime: '#B8F36B',
+  ink: '#0F172A', accent: '#0F172A', accentSoft: 'rgba(15,23,42,0.07)', lime: '#0284C7',
   danger: '#C2410C', dangerSoft: '#FFF1EA', warn: '#B45309', warnSoft: '#FEF3C7', chip: '#E9EDF3', star: '#F59E0B',
 };
 const DARK_C = {
   bg: '#0B1220', card: '#141C2E', text: '#F1F5F9', muted: '#A5B1C4', faint: '#55627A', border: '#24304A',
-  ink: '#0E4434', accent: '#34D399', accentSoft: '#0F2F27', lime: '#C4F57F',
+  ink: '#F1F5F9', accent: '#F1F5F9', accentSoft: 'rgba(241,245,249,0.10)', lime: '#7DD3FC',
   danger: '#FB923C', dangerSoft: '#3A1D10', warn: '#FBBF24', warnSoft: '#33260A', chip: '#1E2840', star: '#FBBF24',
 };
 export const C = DARK ? DARK_C : LIGHT_C;
@@ -22,7 +22,7 @@ export const GLASS = {
   borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)',
   borderTopColor: DARK ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,1)',
 };
-export const ON_ACCENT = DARK ? '#06261C' : '#FFFFFF';
+export const ON_ACCENT = DARK ? '#0B1220' : '#FFFFFF';
 
 // Android needs the weight baked into the family name, so never pair these with fontWeight.
 export const F = {

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, FlatList, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { C, GLASS, DARK, F, NUM, ON_ACCENT, STATUS } from '../../theme';
@@ -29,9 +28,6 @@ export default function IpoList() {
     setRefreshing(false);
   }, []);
   useEffect(() => { load(); }, [load]);
-  // Green hero needs light status-bar icons in both themes; a mounted StatusBar overrides the root one.
-  const [focused, setFocused] = useState(true);
-  useFocusEffect(useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
 
   // Sliding pill behind the selected status tab.
   const reduce = useReduceMotion();
@@ -59,11 +55,9 @@ export default function IpoList() {
 
   return (
     <View style={{ flex: 1 }}>
-      {focused && <StatusBar style="light" />}
-      <LinearGradient colors={['#0B3B2E', '#0E5A43', '#127A57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.hero, { paddingTop: insets.top + 14 }]}>
-        {/* Soft colour blobs for depth */}
-        <LinearGradient colors={['rgba(184,243,107,0.28)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.4, y: 0.7 }} style={StyleSheet.absoluteFill} />
-        <LinearGradient colors={['transparent', 'rgba(56,189,248,0.22)']} start={{ x: 0.5, y: 0.3 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+      <View style={[s.hero, { marginTop: insets.top + 8 }]}>
+        {/* Glass sheen: light catching the top-left of the pane */}
+        <LinearGradient colors={[DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.75)', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.6, y: 0.7 }} style={StyleSheet.absoluteFill} />
         <Text style={s.kicker}>IPO desk</Text>
         <Text style={s.title} accessibilityRole="header">Every issue, one place</Text>
         <View style={s.stats}>
@@ -85,7 +79,7 @@ export default function IpoList() {
             ))}
           </Marquee>
         )}
-      </LinearGradient>
+      </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tabs} style={s.tabsBar} accessibilityRole="tablist">
         <Animated.View pointerEvents="none" style={[s.pill, { width: pillW, transform: [{ translateX: pillX }] }]} />
@@ -218,21 +212,21 @@ const Skeleton = () => (
 );
 
 const s = StyleSheet.create({
-  hero: { paddingHorizontal: 20, paddingBottom: 22, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, overflow: 'hidden' },
-  kicker: { fontFamily: F.bold, fontSize: 12, letterSpacing: 1.2, color: C.lime, textTransform: 'uppercase' },
-  title: { fontFamily: F.heavy, fontSize: 26, color: '#fff', letterSpacing: -0.5, marginTop: 4 },
+  hero: { ...GLASS, marginHorizontal: 12, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 18, borderRadius: 30, overflow: 'hidden' },
+  kicker: { fontFamily: F.bold, fontSize: 12, letterSpacing: 1.2, color: C.muted, textTransform: 'uppercase' },
+  title: { fontFamily: F.heavy, fontSize: 26, color: C.text, letterSpacing: -0.5, marginTop: 4 },
   stats: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  stat: { flex: 1, backgroundColor: 'rgba(255,255,255,0.10)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', borderTopColor: 'rgba(255,255,255,0.32)', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 12 },
-  statNum: { fontFamily: F.heavy, fontSize: 22, color: '#fff' },
-  statLabel: { fontFamily: F.medium, fontSize: 12, color: 'rgba(255,255,255,0.75)' },
+  stat: { flex: 1, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)', borderTopColor: DARK ? 'rgba(255,255,255,0.2)' : '#FFFFFF', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 12 },
+  statNum: { fontFamily: F.heavy, fontSize: 22, color: C.text },
+  statLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   tabsBar: { flexGrow: 0 },
   tabs: { gap: 8, paddingHorizontal: 16, paddingVertical: 14 },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999 },
   pill: { position: 'absolute', left: 0, top: 14, height: 40, borderRadius: 999, backgroundColor: C.accent },
-  ticker: { marginTop: 16, marginHorizontal: -20, paddingVertical: 10, backgroundColor: 'rgba(0,0,0,0.18)' },
+  ticker: { marginTop: 14, marginHorizontal: -18, paddingVertical: 10, backgroundColor: DARK ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.45)', borderTopWidth: 1, borderTopColor: DARK ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.9)' },
   tick: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14 },
   tickDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lime },
-  tickName: { fontFamily: F.semibold, fontSize: 13, color: '#fff', maxWidth: 180 },
+  tickName: { fontFamily: F.semibold, fontSize: 13, color: C.text, maxWidth: 180 },
   tickVal: { fontFamily: F.heavy, fontSize: 13, color: C.lime },
   tabText: { fontFamily: F.semibold, fontSize: 14, color: C.muted },
   tabTextOn: { fontFamily: F.bold, color: ON_ACCENT },
@@ -245,7 +239,7 @@ const s = StyleSheet.create({
   typeTextOn: { fontFamily: F.bold, color: C.text },
   banner: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: C.warnSoft, borderRadius: 12, padding: 12 },
   bannerText: { flex: 1, fontFamily: F.medium, fontSize: 13, color: C.warn },
-  card: { ...GLASS, borderRadius: 20, padding: 16, paddingLeft: 20, overflow: 'hidden', shadowColor: '#0B3B2E', shadowOpacity: DARK ? 0 : 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 0 },
+  card: { ...GLASS, borderRadius: 20, padding: 16, paddingLeft: 20, overflow: 'hidden', shadowColor: '#0F172A', shadowOpacity: DARK ? 0 : 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 0 },
   stripe: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
