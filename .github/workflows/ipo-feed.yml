@@ -1,0 +1,24 @@
+name: IPO feed
+on:
+  schedule:
+    - cron: '30 4,8,12 * * 1-5' # 10:00, 14:00, 18:00 IST on weekdays (~$0.25/run on Apify)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node feed/build.mjs
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          IPOGURU_KEY: ${{ secrets.IPOGURU_KEY }}
+      - name: Commit if changed
+        run: |
+          git config user.name "ipo-feed-bot"
+          git config user.email "ipo-feed-bot@users.noreply.github.com"
+          git add feed/ipos.json
+          git diff --cached --quiet || (git commit -m "Update IPO feed" && git push)

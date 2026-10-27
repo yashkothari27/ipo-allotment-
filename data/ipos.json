@@ -1,0 +1,30 @@
+{
+  "updatedAt": "2026-10-27",
+  "ipos": [
+    {
+      "id": "example-mainboard",
+      "name": "EXAMPLE — Sample Mainboard Ltd",
+      "type": "mainboard",
+      "exchange": "NSE, BSE",
+      "registrar": "kfintech",
+      "priceBand": [380, 400],
+      "lotSize": 37,
+      "issueSizeCr": 1200,
+      "dates": { "open": "2026-10-26", "close": "2026-10-28", "allotment": "2026-10-29", "listing": "2026-11-02" },
+      "subscription": { "qib": 4.2, "nii": 6.8, "retail": 2.1, "total": 3.9 },
+      "about": "Sample entry showing every field. Replace with real IPOs."
+    },
+    {
+      "id": "example-sme",
+      "name": "EXAMPLE — Sample SME Ltd",
+      "type": "sme",
+      "exchange": "NSE Emerge",
+      "registrar": "bigshare",
+      "priceBand": [95, 100],
+      "lotSize": 1200,
+      "issueSizeCr": 42,
+      "dates": { "open": "2026-11-04", "close": "2026-11-06", "allotment": "2026-11-07", "listing": "2026-11-11" },
+      "about": "Sample SME entry with no subscription data yet."
+    }
+  ]
+}

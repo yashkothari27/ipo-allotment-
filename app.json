@@ -1,13 +1,14 @@
 {
   "expo": {
-    "name": "ipo-allotment",
+    "name": "IPO Allotment",
     "slug": "ipo-allotment",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yash.ipoallotment"
     },
     "android": {
       "adaptiveIcon": {
@@ -15,10 +16,54 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.yash.ipoallotment"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "ipoallotment",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-share-intent",
+        {
+          "androidIntentFilters": [
+            "text/*"
+          ],
+          "iosActivationRules": {
+            "NSExtensionActivationSupportsText": true
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ShareExtension",
+                  "bundleIdentifier": "com.yash.ipoallotment.share-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.yash.ipoallotment"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "76538847-c7d9-49ab-b9ab-555d04bb6757"
+      }
+    },
+    "owner": "yash22222"
   }
 }
