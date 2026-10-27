@@ -19,7 +19,7 @@ export function LockGate({ children }) {
   const unlock = useCallback(async () => {
     if (busy.current) return;
     busy.current = true;
-    if (await authenticate('Unlock IPO Allotment')) setUnlocked(true);
+    if (await authenticate('Unlock IPO Desk')) setUnlocked(true);
     busy.current = false;
   }, []);
 
@@ -41,7 +41,7 @@ export function LockGate({ children }) {
           {ready && (
             <>
               <View style={s.icon}><Feather name="lock" size={30} color={ON_ACCENT} /></View>
-              <Text style={s.title}>IPO Allotment is locked</Text>
+              <Text style={s.title}>IPO Desk is locked</Text>
               <Text style={s.text}>Your saved PANs are protected.</Text>
               <Pressable onPress={unlock} style={({ pressed }) => [s.btn, pressed && { opacity: 0.85 }]} accessibilityRole="button">
                 <Text style={s.btnText}>Unlock</Text>
