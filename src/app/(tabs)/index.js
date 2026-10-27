@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { C, DARK, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { Avatar, StatusChip } from '../../components';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FadeIn, PressScale, Shimmer } from '../../motion';
 import { useStored } from '../../store';
 import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand, sortIpos } from '../../ipos';
 
@@ -40,7 +42,10 @@ export default function IpoList() {
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       {focused && <StatusBar style="light" />}
-      <View style={[s.hero, { paddingTop: insets.top + 14 }]}>
+      <LinearGradient colors={['#0B3B2E', '#0E5A43', '#127A57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.hero, { paddingTop: insets.top + 14 }]}>
+        {/* Soft colour blobs for depth */}
+        <View style={[s.blob, { backgroundColor: C.lime, top: -60, right: -40, width: 200, height: 200, opacity: 0.18 }]} />
+        <View style={[s.blob, { backgroundColor: '#38BDF8', bottom: -70, left: -50, width: 180, height: 180, opacity: 0.14 }]} />
         <Text style={s.kicker}>IPO desk</Text>
         <Text style={s.title} accessibilityRole="header">Every issue, one place</Text>
         <View style={s.stats}>
@@ -51,7 +56,7 @@ export default function IpoList() {
             </View>
           ))}
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tabs} style={s.tabsBar} accessibilityRole="tablist">
         {TABS.map(([k, label]) => {
@@ -87,8 +92,10 @@ export default function IpoList() {
             )}
           </View>
         }
-        renderItem={({ item }) => (
-          <IpoCard ipo={item} watched={watch.includes(item.id)} onWatch={() => toggleWatch(item.id)} />
+        renderItem={({ item, index }) => (
+          <FadeIn index={index} key={`${tab}-${type}-${item.id}`}>
+            <IpoCard ipo={item} watched={watch.includes(item.id)} onWatch={() => toggleWatch(item.id)} />
+          </FadeIn>
         )}
         ListEmptyComponent={
           !feed ? <Skeleton /> : (
@@ -124,7 +131,7 @@ function IpoCard({ ipo, watched, onWatch }) {
     status === 'upcoming' ? ['Lot size', ipo.lotSize ? `${ipo.lotSize} sh` : '—'] : ['Subscribed', sub != null ? `${sub}x` : '—'],
   ];
   return (
-    <Pressable onPress={() => router.push(`/ipo/${ipo.id}`)} style={({ pressed }) => [s.card, pressed && { transform: [{ scale: 0.985 }] }]}
+    <PressScale onPress={() => router.push(`/ipo/${ipo.id}`)} style={s.card}
       accessibilityRole="button" accessibilityLabel={`${ipo.name}, ${STATUS[status].label}, price band ${priceBand(ipo.priceBand)}`}>
       <View style={[s.stripe, { backgroundColor: STATUS[status].fg }]} />
       <View style={s.cardTop}>
@@ -152,22 +159,34 @@ function IpoCard({ ipo, watched, onWatch }) {
         <StatusChip status={status} />
         {ipo.dates?.allotment && <Text style={s.footNote}>Allotment {fmtDate(ipo.dates.allotment)}</Text>}
       </View>
-    </Pressable>
+    </PressScale>
   );
 }
 
 const Skeleton = () => (
   <View style={{ gap: 12 }} accessibilityLabel="Loading IPOs">
-    {[0, 1, 2].map((i) => <View key={i} style={[s.card, { height: 168, opacity: 0.6 }]} />)}
+    {[0, 1, 2].map((i) => (
+      <View key={i} style={[s.card, { gap: 12 }]}>
+        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+          <Shimmer style={{ width: 44, height: 44, borderRadius: 13 }} />
+          <View style={{ flex: 1, gap: 8 }}>
+            <Shimmer style={{ height: 14, borderRadius: 7, width: '70%' }} />
+            <Shimmer style={{ height: 10, borderRadius: 5, width: '45%' }} />
+          </View>
+        </View>
+        <Shimmer style={{ height: 58, borderRadius: 14 }} />
+      </View>
+    ))}
   </View>
 );
 
 const s = StyleSheet.create({
-  hero: { backgroundColor: C.ink, paddingHorizontal: 20, paddingBottom: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  hero: { paddingHorizontal: 20, paddingBottom: 22, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, overflow: 'hidden' },
+  blob: { position: 'absolute', borderRadius: 999 },
   kicker: { fontFamily: F.bold, fontSize: 12, letterSpacing: 1.2, color: C.lime, textTransform: 'uppercase' },
   title: { fontFamily: F.heavy, fontSize: 26, color: '#fff', letterSpacing: -0.5, marginTop: 4 },
   stats: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  stat: { flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 16, paddingVertical: 10, paddingHorizontal: 12 },
+  stat: { flex: 1, backgroundColor: 'rgba(255,255,255,0.10)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', borderTopColor: 'rgba(255,255,255,0.32)', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 12 },
   statNum: { fontFamily: F.heavy, fontSize: 22, color: '#fff' },
   statLabel: { fontFamily: F.medium, fontSize: 12, color: 'rgba(255,255,255,0.75)' },
   tabsBar: { flexGrow: 0 },

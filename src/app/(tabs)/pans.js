@@ -9,6 +9,7 @@ import { maskPan, panName, useStored } from '../../store';
 import { authenticate } from '../../lock';
 import { C, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
+import { FadeIn } from '../../motion';
 
 const PAN = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
 
@@ -83,8 +84,8 @@ export default function Pans() {
             </View>
           </View>
         }
-        renderItem={({ item }) => (
-          <View style={s.card}>
+        renderItem={({ item, index }) => (
+          <FadeIn index={index}><View style={s.card}>
             <Avatar name={panName(item)} size={46} />
             <Pressable style={{ flex: 1 }} onPress={() => setShown(shown === item.pan ? null : item.pan)} accessibilityRole="button"
               accessibilityLabel={`${panName(item)}. ${shown === item.pan ? item.pan.split('').join(' ') : 'PAN hidden'}`} accessibilityHint="Shows or hides the full PAN">
@@ -98,7 +99,7 @@ export default function Pans() {
               accessibilityRole="button" accessibilityLabel={`Remove ${panName(item)}`}>
               <Feather name="trash-2" size={18} color={C.danger} />
             </Pressable>
-          </View>
+          </View></FadeIn>
         )}
         ListEmptyComponent={
           <View style={s.empty}>
