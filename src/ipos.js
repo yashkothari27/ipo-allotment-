@@ -11,7 +11,10 @@ export async function loadIpos() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (!Array.isArray(data.ipos)) throw new Error('Feed has no "ipos" array');
-    return { ...data, source: 'remote' };
+    // Drop malformed entries rather than letting one bad row crash the list.
+    const ipos = data.ipos.filter((i) => i && typeof i.id === 'string' && typeof i.name === 'string' && (!i.dates || typeof i.dates === 'object')
+      && (!i.priceBand || (Array.isArray(i.priceBand) && i.priceBand.every(Number.isFinite))));
+    return { ...data, ipos, source: 'remote' };
   } catch (e) {
     return { ...bundled, source: 'bundled', error: e.message };
   }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useShareIntentContext } from 'expo-share-intent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { extractPans } from '../../registrars';
-import { useStored } from '../../store';
+import { maskPan, panName, useStored } from '../../store';
+import { authenticate } from '../../lock';
 import { C, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
 
@@ -17,12 +19,14 @@ export default function Pans() {
   const [pan, setPan] = useState('');
   const [label, setLabel] = useState('');
   const [error, setError] = useState('');
+  const [shown, setShown] = useState(null); // PAN currently revealed
+  const [lockOn, saveLock] = useStored('applock', false);
   const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntentContext();
 
   const save = (next) => savePans(next).catch(() => Alert.alert("Couldn't save", 'Your PAN list was not saved. Try again.'));
   const addPans = (list, lbl) => {
     const fresh = list.filter((p) => !pans.some((x) => x.pan === p));
-    if (fresh.length) save([...pans, ...fresh.map((p) => ({ pan: p, label: lbl || p }))]);
+    if (fresh.length) save([...pans, ...fresh.map((p) => ({ pan: p, label: lbl || '' }))]);
     return fresh.length;
   };
 
@@ -33,10 +37,18 @@ export default function Pans() {
     if (!found.length) Alert.alert('No PAN found', 'The shared text has no PAN in the ABCDE1234F format.');
     else {
       const n = addPans(found, 'Shared');
-      Alert.alert(n ? `Added ${n} PAN${n > 1 ? 's' : ''}` : 'Already saved', n ? 'Saved under the name "Shared". Tap it to rename.' : 'These PANs are already in your list.');
+      Alert.alert(n ? `Added ${n} PAN${n > 1 ? 's' : ''}` : 'Already saved', n ? 'Saved under the name "Shared".' : 'These PANs are already in your list.');
     }
     resetShareIntent();
   }, [hasShareIntent]);
+
+  const toggleLock = async (on) => {
+    if (on && (await LocalAuthentication.getEnrolledLevelAsync()) === LocalAuthentication.SecurityLevel.NONE) {
+      return Alert.alert('Set up a screen lock first', 'Add a fingerprint, face or PIN in your phone settings, then turn on App lock.');
+    }
+    // Confirm with the device lock both ways, so someone holding an unlocked phone can't quietly switch it off.
+    if (await authenticate(on ? 'Turn on App lock' : 'Turn off App lock')) saveLock(on);
+  };
 
   const close = () => { setOpen(false); setPan(''); setLabel(''); setError(''); };
   const onSave = () => {
@@ -45,7 +57,7 @@ export default function Pans() {
     if (!addPans([value], label.trim())) return setError('This PAN is already saved.');
     close();
   };
-  const onRemove = (x) => Alert.alert(`Remove ${x.label}?`, x.pan, [
+  const onRemove = (x) => Alert.alert(`Remove ${panName(x)}?`, maskPan(x.pan), [
     { text: 'Cancel', style: 'cancel' },
     { text: 'Remove', style: 'destructive', onPress: () => save(pans.filter((p) => p.pan !== x.pan)) },
   ]);
@@ -59,18 +71,31 @@ export default function Pans() {
         ListHeaderComponent={
           <View style={s.head}>
             <Text style={s.title} accessibilityRole="header">PANs</Text>
-            <Text style={s.sub}>{pans.length ? `${pans.length} saved · checked together on the Allotment tab` : 'Saved only on this phone'}</Text>
+            <Text style={s.sub}>{pans.length ? `${pans.length} saved · encrypted on this phone` : 'Encrypted and saved only on this phone'}</Text>
+            <View style={s.lockRow}>
+              <View style={s.lockIcon}><Feather name="lock" size={18} color={C.accent} /></View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.name} nativeID="lockL">App lock</Text>
+                <Text style={s.lockHint}>Ask for fingerprint, face or PIN when opening the app</Text>
+              </View>
+              <Switch value={lockOn} onValueChange={toggleLock} accessibilityLabelledBy="lockL"
+                trackColor={{ true: C.accent, false: C.border }} thumbColor="#fff" />
+            </View>
           </View>
         }
         renderItem={({ item }) => (
           <View style={s.card}>
-            <Avatar name={item.label} size={46} />
-            <View style={{ flex: 1 }}>
-              <Text style={s.name} numberOfLines={1}>{item.label}</Text>
-              <Text style={[s.pan, NUM]}>{item.pan}</Text>
-            </View>
+            <Avatar name={panName(item)} size={46} />
+            <Pressable style={{ flex: 1 }} onPress={() => setShown(shown === item.pan ? null : item.pan)} accessibilityRole="button"
+              accessibilityLabel={`${panName(item)}. ${shown === item.pan ? item.pan.split('').join(' ') : 'PAN hidden'}`} accessibilityHint="Shows or hides the full PAN">
+              <Text style={s.name} numberOfLines={1}>{panName(item)}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={[s.pan, NUM]}>{shown === item.pan ? item.pan : maskPan(item.pan)}</Text>
+                <Feather name={shown === item.pan ? 'eye-off' : 'eye'} size={14} color={C.muted} style={{ marginTop: 2 }} />
+              </View>
+            </Pressable>
             <Pressable onPress={() => onRemove(item)} hitSlop={8} style={({ pressed }) => [s.del, pressed && { opacity: 0.6 }]}
-              accessibilityRole="button" accessibilityLabel={`Remove ${item.label}`}>
+              accessibilityRole="button" accessibilityLabel={`Remove ${panName(item)}`}>
               <Feather name="trash-2" size={18} color={C.danger} />
             </Pressable>
           </View>
@@ -122,6 +147,9 @@ export default function Pans() {
 const s = StyleSheet.create({
   list: { paddingHorizontal: 16, paddingBottom: 110, gap: 10 },
   head: { marginBottom: 10 },
+  lockRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.card, borderRadius: 20, padding: 14, marginTop: 16, borderWidth: DARK ? 1 : 0, borderColor: C.border },
+  lockIcon: { width: 40, height: 40, borderRadius: 14, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  lockHint: { fontFamily: F.regular, fontSize: 12, color: C.muted, marginTop: 1 },
   title: { fontFamily: F.heavy, fontSize: 30, letterSpacing: -0.6, color: C.text },
   sub: { fontFamily: F.medium, fontSize: 14, color: C.muted, marginTop: 2 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: C.card, borderRadius: 20, padding: 14, borderWidth: DARK ? 1 : 0, borderColor: C.border },

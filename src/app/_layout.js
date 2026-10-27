@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ShareIntentProvider } from 'expo-share-intent';
 import { useFonts, Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, Manrope_800ExtraBold } from '@expo-google-fonts/manrope';
 import { C, DARK, F } from '../theme';
+import { LockGate } from '../lock';
 
 export default function RootLayout() {
   const [loaded] = useFonts({ Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, Manrope_800ExtraBold });
@@ -11,6 +12,7 @@ export default function RootLayout() {
   return (
     <ShareIntentProvider>
       <StatusBar style={DARK ? 'light' : 'dark'} />
+      <LockGate>
       <Stack screenOptions={{
         headerTintColor: C.text,
         headerStyle: { backgroundColor: C.bg },
@@ -22,6 +24,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="ipo/[id]" options={{ title: '' }} />
       </Stack>
+      </LockGate>
     </ShareIntentProvider>
   );
 }

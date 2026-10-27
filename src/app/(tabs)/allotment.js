@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { REGISTRARS, checkAll } from '../../registrars';
-import { useStored } from '../../store';
+import { maskPan, panName, useStored } from '../../store';
 import { C, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
 
@@ -147,10 +147,10 @@ export default function Allotment() {
             return (
               <View key={x.pan} style={i > 0 && s.optionRule}>
               <View style={s.panRow}>
-                <Avatar name={x.label} size={38} />
+                <Avatar name={panName(x)} size={38} />
                 <View style={{ flex: 1 }}>
-                  <Text style={s.panLabel} numberOfLines={1}>{x.label}</Text>
-                  <Text style={[s.panText, NUM]}>{x.pan}</Text>
+                  <Text style={s.panLabel} numberOfLines={1}>{panName(x)}</Text>
+                  <Text style={[s.panText, NUM]}>{maskPan(x.pan)}</Text>
                 </View>
                 {r?.status === 'checking' ? (
                   <ActivityIndicator color={C.accent} accessibilityLabel="Checking" />
