@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, FlatList, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
-import { C, DARK, F, NUM, ON_ACCENT, STATUS } from '../../theme';
+import { C, GLASS, DARK, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { Avatar, StatusChip } from '../../components';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FadeIn, PressScale, Shimmer } from '../../motion';
+import { BlurTargetView, BlurView } from 'expo-blur';
+import { CountUp, FadeIn, Marquee, PressScale, Shimmer, useReduceMotion } from '../../motion';
 import { useStored } from '../../store';
 import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand, sortIpos } from '../../ipos';
 
@@ -32,37 +33,66 @@ export default function IpoList() {
   const [focused, setFocused] = useState(true);
   useFocusEffect(useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
 
+  // Sliding pill behind the selected status tab.
+  const reduce = useReduceMotion();
+  const layouts = useRef({});
+  const pillX = useRef(new Animated.Value(0)).current;
+  const pillW = useRef(new Animated.Value(0)).current;
+  const movePill = (k, animate) => {
+    const l = layouts.current[k];
+    if (!l) return;
+    const cfg = { stiffness: 260, damping: 26, useNativeDriver: false };
+    if (!animate || reduce) { pillX.setValue(l.x); pillW.setValue(l.width); return; }
+    Animated.parallel([Animated.spring(pillX, { toValue: l.x, ...cfg }), Animated.spring(pillW, { toValue: l.width, ...cfg })]).start();
+  };
+  const onTabLayout = (k, l) => { layouts.current[k] = l; if (k === tab) movePill(k, false); };
+  useEffect(() => { movePill(tab, true); }, [tab]);
+
   const all = feed ? sortIpos(feed.ipos) : [];
   const count = (k) => all.filter((i) => ipoStatus(i) === k).length;
   const list = all
     .filter((i) => (tab === 'watch' ? watch.includes(i.id) : ipoStatus(i) === tab))
     .filter((i) => type === 'all' || i.type === type);
+  const listRef = useRef(null);
+  const ticker = all.filter((i) => ipoStatus(i) === 'open');
   const toggleWatch = (id) => saveWatch(watch.includes(id) ? watch.filter((x) => x !== id) : [...watch, id]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
+    <View style={{ flex: 1 }}>
       {focused && <StatusBar style="light" />}
       <LinearGradient colors={['#0B3B2E', '#0E5A43', '#127A57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.hero, { paddingTop: insets.top + 14 }]}>
         {/* Soft colour blobs for depth */}
-        <View style={[s.blob, { backgroundColor: C.lime, top: -60, right: -40, width: 200, height: 200, opacity: 0.18 }]} />
-        <View style={[s.blob, { backgroundColor: '#38BDF8', bottom: -70, left: -50, width: 180, height: 180, opacity: 0.14 }]} />
+        <LinearGradient colors={['rgba(184,243,107,0.28)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.4, y: 0.7 }} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={['transparent', 'rgba(56,189,248,0.22)']} start={{ x: 0.5, y: 0.3 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
         <Text style={s.kicker}>IPO desk</Text>
         <Text style={s.title} accessibilityRole="header">Every issue, one place</Text>
         <View style={s.stats}>
           {['open', 'upcoming', 'closed'].map((k) => (
             <View key={k} style={s.stat}>
-              <Text style={[s.statNum, NUM, k === 'open' && { color: C.lime }]}>{feed ? count(k) : '–'}</Text>
+              {feed ? <CountUp value={count(k)} style={[s.statNum, NUM, k === 'open' && { color: C.lime }]} /> : <Text style={s.statNum}>–</Text>}
               <Text style={s.statLabel}>{STATUS[k].label}</Text>
             </View>
           ))}
         </View>
+        {ticker.length > 0 && (
+          <Marquee style={s.ticker}>
+            {ticker.map((i) => (
+              <View key={i.id} style={s.tick}>
+                <View style={s.tickDot} />
+                <Text style={s.tickName} numberOfLines={1}>{i.name}</Text>
+                <Text style={[s.tickVal, NUM]}>{i.subscription?.total != null ? `${i.subscription.total}x` : priceBand(i.priceBand)}</Text>
+              </View>
+            ))}
+          </Marquee>
+        )}
       </LinearGradient>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tabs} style={s.tabsBar} accessibilityRole="tablist">
+        <Animated.View pointerEvents="none" style={[s.pill, { width: pillW, transform: [{ translateX: pillX }] }]} />
         {TABS.map(([k, label]) => {
           const on = tab === k;
           return (
-            <Pressable key={k} onPress={() => setTab(k)} style={[s.tab, on && s.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: on }}>
+            <Pressable key={k} onPress={() => setTab(k)} onLayout={(e) => onTabLayout(k, e.nativeEvent.layout)} style={s.tab} accessibilityRole="tab" accessibilityState={{ selected: on }}>
               {k === 'watch' && <Feather name="star" size={14} color={on ? ON_ACCENT : C.muted} />}
               <Text style={[s.tabText, on && s.tabTextOn]}>{label}</Text>
             </Pressable>
@@ -70,6 +100,7 @@ export default function IpoList() {
         })}
       </ScrollView>
 
+      <BlurTargetView ref={listRef} style={{ flex: 1 }}>
       <FlatList
         data={list}
         keyExtractor={(i) => i.id}
@@ -118,6 +149,12 @@ export default function IpoList() {
           </View>
         )}
       />
+      </BlurTargetView>
+      {/* Blur vignette: cards soften and fade as they slide under the floating tab bar. */}
+      <View pointerEvents="none" style={s.vignette}>
+        <BlurView blurTarget={listRef} blurMethod="dimezisBlurViewSdk31Plus" intensity={30} tint={DARK ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[C.bg + '00', C.bg + '99', C.bg + 'E6']} style={StyleSheet.absoluteFill} />
+      </View>
     </View>
   );
 }
@@ -182,7 +219,6 @@ const Skeleton = () => (
 
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingBottom: 22, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, overflow: 'hidden' },
-  blob: { position: 'absolute', borderRadius: 999 },
   kicker: { fontFamily: F.bold, fontSize: 12, letterSpacing: 1.2, color: C.lime, textTransform: 'uppercase' },
   title: { fontFamily: F.heavy, fontSize: 26, color: '#fff', letterSpacing: -0.5, marginTop: 4 },
   stats: { flexDirection: 'row', gap: 10, marginTop: 16 },
@@ -191,11 +227,17 @@ const s = StyleSheet.create({
   statLabel: { fontFamily: F.medium, fontSize: 12, color: 'rgba(255,255,255,0.75)' },
   tabsBar: { flexGrow: 0 },
   tabs: { gap: 8, paddingHorizontal: 16, paddingVertical: 14 },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
-  tabOn: { backgroundColor: C.accent, borderColor: C.accent },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999 },
+  pill: { position: 'absolute', left: 0, top: 14, height: 40, borderRadius: 999, backgroundColor: C.accent },
+  ticker: { marginTop: 16, marginHorizontal: -20, paddingVertical: 10, backgroundColor: 'rgba(0,0,0,0.18)' },
+  tick: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14 },
+  tickDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lime },
+  tickName: { fontFamily: F.semibold, fontSize: 13, color: '#fff', maxWidth: 180 },
+  tickVal: { fontFamily: F.heavy, fontSize: 13, color: C.lime },
   tabText: { fontFamily: F.semibold, fontSize: 14, color: C.muted },
   tabTextOn: { fontFamily: F.bold, color: ON_ACCENT },
-  list: { paddingHorizontal: 16, paddingBottom: 32, gap: 12 },
+  list: { paddingHorizontal: 16, paddingBottom: 140, gap: 12 },
+  vignette: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 150 },
   types: { flexDirection: 'row', gap: 16 },
   type: { minHeight: 44, justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
   typeOn: { borderBottomColor: C.accent },
@@ -203,7 +245,7 @@ const s = StyleSheet.create({
   typeTextOn: { fontFamily: F.bold, color: C.text },
   banner: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: C.warnSoft, borderRadius: 12, padding: 12 },
   bannerText: { flex: 1, fontFamily: F.medium, fontSize: 13, color: C.warn },
-  card: { backgroundColor: C.card, borderRadius: 20, padding: 16, paddingLeft: 20, overflow: 'hidden', shadowColor: '#0B3B2E', shadowOpacity: DARK ? 0 : 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  card: { ...GLASS, borderRadius: 20, padding: 16, paddingLeft: 20, overflow: 'hidden', shadowColor: '#0B3B2E', shadowOpacity: DARK ? 0 : 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 0 },
   stripe: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -211,7 +253,7 @@ const s = StyleSheet.create({
   sme: { fontFamily: F.heavy, fontSize: 10, letterSpacing: 0.6, color: STATUS.listed.fg, backgroundColor: STATUS.listed.bg, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, overflow: 'hidden' },
   dates: { fontFamily: F.medium, fontSize: 13, color: C.muted },
   star: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  metrics: { flexDirection: 'row', gap: 8, marginTop: 14, backgroundColor: C.bg, borderRadius: 14, padding: 12 },
+  metrics: { flexDirection: 'row', gap: 8, marginTop: 14, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)', borderRadius: 14, padding: 12 },
   mLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   mValue: { fontFamily: F.bold, fontSize: 15, color: C.text, marginTop: 2 },
   cardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },

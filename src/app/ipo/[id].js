@@ -3,7 +3,7 @@ import { AccessibilityInfo, ActivityIndicator, Animated, Easing, Pressable, Scro
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
-import { C, F, NUM, ON_ACCENT, STATUS } from '../../theme';
+import { C, GLASS, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { StatusChip, TypeTag } from '../../components';
 import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand } from '../../ipos';
 
@@ -162,7 +162,7 @@ const s = StyleSheet.create({
   factLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   factValue: { fontFamily: F.bold, fontSize: 16, color: C.text, marginTop: 4 },
   h2: { fontFamily: F.bold, fontSize: 17, color: C.text, marginTop: 32, marginBottom: 10 },
-  panel: { backgroundColor: C.card, borderRadius: 14, padding: 16 },
+  panel: { ...GLASS, borderRadius: 20, padding: 16 },
   tlRow: { flexDirection: 'row', alignItems: 'flex-start', minHeight: 44 },
   tlRail: { width: 18, alignItems: 'center', alignSelf: 'stretch' },
   dot: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: C.border, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' },

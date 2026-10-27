@@ -58,3 +58,39 @@ export function Shimmer({ style }) {
     </View>
   );
 }
+
+// Number that counts up to `value`.
+export function CountUp({ value, style }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(0)).current;
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    if (reduce || typeof value !== 'number') return setShown(value);
+    const id = v.addListener(({ value: n }) => setShown(Math.round(n)));
+    Animated.timing(v, { toValue: value, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+    return () => v.removeListener(id);
+  }, [value, reduce]);
+  return <Animated.Text style={style} accessibilityLabel={String(value)}>{shown}</Animated.Text>;
+}
+
+// Endless horizontal ticker; children are rendered twice so the loop is seamless.
+export function Marquee({ children, speed = 40, style }) {
+  const reduce = useReduceMotion();
+  const [w, setW] = useState(0);
+  const x = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!w || reduce) return;
+    x.setValue(0);
+    const loop = Animated.loop(Animated.timing(x, { toValue: -w, duration: (w / speed) * 1000, easing: Easing.linear, useNativeDriver: true }));
+    loop.start();
+    return () => loop.stop();
+  }, [w, reduce]);
+  return (
+    <View style={[{ overflow: 'hidden' }, style]}>
+      <Animated.View style={{ flexDirection: 'row', transform: [{ translateX: x }] }}>
+        <View style={{ flexDirection: 'row' }} onLayout={(e) => setW(e.nativeEvent.layout.width)}>{children}</View>
+        {!reduce && <View style={{ flexDirection: 'row' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{children}</View>}
+      </Animated.View>
+    </View>
+  );
+}

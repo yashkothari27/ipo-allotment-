@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { REGISTRARS, checkAll } from '../../registrars';
 import { maskPan, panName, useStored } from '../../store';
-import { C, DARK, F, NUM, ON_ACCENT } from '../../theme';
+import { C, GLASS, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
 
 const RESULT = {
@@ -189,17 +189,17 @@ export default function Allotment() {
 }
 
 const s = StyleSheet.create({
-  search: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.card, borderRadius: 16, paddingHorizontal: 14, minHeight: 48, marginBottom: 10, borderWidth: 1, borderColor: C.border },
+  search: { flexDirection: 'row', alignItems: 'center', gap: 10, ...GLASS, borderRadius: 16, paddingHorizontal: 14, minHeight: 48, marginBottom: 10 },
   searchInput: { flex: 1, fontFamily: F.medium, fontSize: 15, color: C.text, paddingVertical: 10 },
   summary: { flexDirection: 'row', alignItems: 'center', gap: 14, borderRadius: 20, padding: 16, marginTop: 16 },
   summaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   summaryTitle: { fontFamily: F.heavy, fontSize: 17, color: C.text },
   summaryText: { fontFamily: F.medium, fontSize: 13, lineHeight: 18, color: C.muted, marginTop: 2 },
-  page: { paddingHorizontal: 16, paddingBottom: 40 },
+  page: { paddingHorizontal: 16, paddingBottom: 130 },
   title: { fontFamily: F.heavy, fontSize: 30, letterSpacing: -0.6, color: C.text },
   sub: { fontFamily: F.medium, fontSize: 14, color: C.muted, marginTop: 2 },
   h2: { fontFamily: F.bold, fontSize: 15, color: C.text, marginTop: 20, marginBottom: 8 },
-  panel: { backgroundColor: C.card, borderRadius: 20, paddingHorizontal: 16, borderWidth: DARK ? 1 : 0, borderColor: C.border },
+  panel: { ...GLASS, borderRadius: 20, paddingHorizontal: 16 },
   option: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingVertical: 10 },
   optionRule: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   pressed: { opacity: 0.6 },

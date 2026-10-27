@@ -15,6 +15,13 @@ const DARK_C = {
 };
 export const C = DARK ? DARK_C : LIGHT_C;
 // Text/icons placed on C.accent fills.
+// Liquid glass: translucent fill over the app backdrop, hairline edge, brighter top edge for refraction.
+export const GLASS = {
+  backgroundColor: DARK ? 'rgba(30,41,64,0.55)' : 'rgba(255,255,255,0.62)',
+  borderWidth: 1,
+  borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)',
+  borderTopColor: DARK ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,1)',
+};
 export const ON_ACCENT = DARK ? '#06261C' : '#FFFFFF';
 
 // Android needs the weight baked into the family name, so never pair these with fontWeight.

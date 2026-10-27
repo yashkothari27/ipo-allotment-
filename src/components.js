@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { C, F, STATUS, hue } from './theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { C, DARK, F, STATUS, hue } from './theme';
 
 export function StatusChip({ status }) {
   const st = STATUS[status];
@@ -53,3 +54,15 @@ const s = StyleSheet.create({
   segText: { fontFamily: F.semibold, fontSize: 14, color: C.muted },
   segTextOn: { color: C.accent, fontFamily: F.bold },
 });
+
+// App-wide colour field behind every screen, so glass surfaces have something to refract.
+export function Backdrop() {
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <LinearGradient colors={DARK ? ['#0B1220', '#0D1B2A', '#0B1F1A'] : ['#EEF7F1', '#F3F5F9', '#EAF3FB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[DARK ? 'rgba(16,185,129,0.16)' : 'rgba(134,239,172,0.45)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['transparent', DARK ? 'rgba(14,165,233,0.12)' : 'rgba(125,211,252,0.4)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['transparent', DARK ? 'rgba(244,114,182,0.07)' : 'rgba(251,207,232,0.45)']} start={{ x: 0.3, y: 0.5 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+    </View>
+  );
+}

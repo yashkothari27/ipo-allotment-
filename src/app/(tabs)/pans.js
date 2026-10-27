@@ -7,7 +7,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { extractPans } from '../../registrars';
 import { maskPan, panName, useStored } from '../../store';
 import { authenticate } from '../../lock';
-import { C, DARK, F, NUM, ON_ACCENT } from '../../theme';
+import { C, GLASS, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
 import { FadeIn } from '../../motion';
 
@@ -64,7 +64,7 @@ export default function Pans() {
   ]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={pans}
         keyExtractor={(x) => x.pan}
@@ -110,7 +110,7 @@ export default function Pans() {
         }
       />
 
-      <Pressable onPress={() => setOpen(true)} style={({ pressed }) => [s.fab, { bottom: 20 }, pressed && { transform: [{ scale: 0.96 }] }]}
+      <Pressable onPress={() => setOpen(true)} style={({ pressed }) => [s.fab, { bottom: 112 }, pressed && { transform: [{ scale: 0.96 }] }]}
         accessibilityRole="button" accessibilityLabel="Add PAN">
         <Feather name="plus" size={22} color={ON_ACCENT} />
         <Text style={s.fabText}>Add PAN</Text>
@@ -146,14 +146,14 @@ export default function Pans() {
 }
 
 const s = StyleSheet.create({
-  list: { paddingHorizontal: 16, paddingBottom: 110, gap: 10 },
+  list: { paddingHorizontal: 16, paddingBottom: 200, gap: 10 },
   head: { marginBottom: 10 },
-  lockRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.card, borderRadius: 20, padding: 14, marginTop: 16, borderWidth: DARK ? 1 : 0, borderColor: C.border },
+  lockRow: { flexDirection: 'row', alignItems: 'center', gap: 12, ...GLASS, borderRadius: 20, padding: 14, marginTop: 16 },
   lockIcon: { width: 40, height: 40, borderRadius: 14, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center' },
   lockHint: { fontFamily: F.regular, fontSize: 12, color: C.muted, marginTop: 1 },
   title: { fontFamily: F.heavy, fontSize: 30, letterSpacing: -0.6, color: C.text },
   sub: { fontFamily: F.medium, fontSize: 14, color: C.muted, marginTop: 2 },
-  card: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: C.card, borderRadius: 20, padding: 14, borderWidth: DARK ? 1 : 0, borderColor: C.border },
+  card: { flexDirection: 'row', alignItems: 'center', gap: 14, ...GLASS, borderRadius: 20, padding: 14 },
   name: { fontFamily: F.bold, fontSize: 16, color: C.text },
   pan: { fontFamily: F.semibold, fontSize: 14, letterSpacing: 1.2, color: C.muted, marginTop: 2 },
   del: { width: 44, height: 44, borderRadius: 14, backgroundColor: C.dangerSoft, alignItems: 'center', justifyContent: 'center' },
