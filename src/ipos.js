@@ -2,7 +2,7 @@ import bundled from '../data/ipos.json';
 
 // Raw URL of feed/ipos.json in your GitHub repo (built every 3 h by .github/workflows/ipo-feed.yml). Empty = bundled file.
 // e.g. https://raw.githubusercontent.com/<you>/ipo-allotment/main/feed/ipos.json
-export const IPO_FEED_URL = '';
+export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json';
 
 export async function loadIpos() {
   if (!IPO_FEED_URL) return { ...bundled, source: 'bundled' };
