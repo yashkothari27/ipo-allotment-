@@ -29,7 +29,7 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontFamily: F.bold, fontSize: 11 },
         tabBarBackground: () => <Glass />,
         tabBarStyle: {
-          position: 'absolute', left: 16, right: 16, bottom: insets.bottom + 10,
+          position: 'absolute', left: 0, right: 0, marginHorizontal: 16, bottom: insets.bottom + 10,
           height: 66, paddingBottom: 8, paddingTop: 8, borderRadius: 26, borderTopWidth: 0,
           backgroundColor: 'transparent', elevation: 0,
           shadowColor: '#0F172A', shadowOpacity: DARK ? 0.5 : 0.16, shadowRadius: 24, shadowOffset: { width: 0, height: 10 },

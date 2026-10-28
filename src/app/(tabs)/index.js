@@ -6,10 +6,9 @@ import Feather from '@expo/vector-icons/Feather';
 import { C, GLASS, DARK, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { Avatar, StatusChip } from '../../components';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurTargetView, BlurView } from 'expo-blur';
 import { CountUp, FadeIn, Marquee, PressScale, Shimmer, useReduceMotion } from '../../motion';
 import { useStored } from '../../store';
-import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand, sortIpos } from '../../ipos';
+import { fmtDate, fmtINR, ipoStatus, loadIpos, priceBand, sortIpos, withPct } from '../../ipos';
 
 const TABS = [['open', 'Open'], ['upcoming', 'Upcoming'], ['closed', 'Closed'], ['listed', 'Listed'], ['watch', 'Watchlist']];
 const TYPES = [['all', 'All'], ['mainboard', 'Mainboard'], ['sme', 'SME']];
@@ -49,7 +48,6 @@ export default function IpoList() {
   const list = all
     .filter((i) => (tab === 'watch' ? watch.includes(i.id) : ipoStatus(i) === tab))
     .filter((i) => type === 'all' || i.type === type);
-  const listRef = useRef(null);
   const ticker = all.filter((i) => ipoStatus(i) === 'open');
   const toggleWatch = (id) => saveWatch(watch.includes(id) ? watch.filter((x) => x !== id) : [...watch, id]);
 
@@ -94,7 +92,6 @@ export default function IpoList() {
         })}
       </ScrollView>
 
-      <BlurTargetView ref={listRef} style={{ flex: 1 }}>
       <FlatList
         data={list}
         keyExtractor={(i) => i.id}
@@ -143,11 +140,9 @@ export default function IpoList() {
           </View>
         )}
       />
-      </BlurTargetView>
-      {/* Blur vignette: cards soften and fade as they slide under the floating tab bar. */}
+      {/* Vignette: cards fade into the backdrop as they slide under the floating tab bar. */}
       <View pointerEvents="none" style={s.vignette}>
-        <BlurView blurTarget={listRef} blurMethod="dimezisBlurViewSdk31Plus" intensity={30} tint={DARK ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-        <LinearGradient colors={[C.bg + '00', C.bg + '99', C.bg + 'E6']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={DARK ? ['rgba(18,15,30,0)', 'rgba(18,15,30,0.85)'] : ['rgba(251,241,238,0)', 'rgba(251,241,238,0.92)']} style={StyleSheet.absoluteFill} />
       </View>
     </View>
   );
@@ -156,9 +151,14 @@ export default function IpoList() {
 function IpoCard({ ipo, watched, onWatch }) {
   const status = ipoStatus(ipo);
   const sub = ipo.subscription?.total;
-  const metrics = [
+  const tone = (pct) => (pct > 0 ? C.up : pct < 0 ? C.danger : undefined);
+  const metrics = status === 'listed' && ipo.listingPrice != null ? [
+    ['Issue price', fmtINR(ipo.issuePrice ?? ipo.priceBand?.[1])],
+    ['Listing', withPct(ipo.listingPrice, ipo.listingGainPercent), tone(ipo.listingGainPercent)],
+    ['Current', withPct(ipo.currentPrice, ipo.currentGainPercent), tone(ipo.currentGainPercent)],
+  ] : [
     ['Price band', priceBand(ipo.priceBand)],
-    ['Min. invest', fmtINR(minInvestment(ipo))],
+    ['GMP', withPct(ipo.gmp, ipo.gmpPercent), tone(ipo.gmp)],
     status === 'upcoming' ? ['Lot size', ipo.lotSize ? `${ipo.lotSize} sh` : '—'] : ['Subscribed', sub != null ? `${sub}x` : '—'],
   ];
   return (
@@ -179,10 +179,10 @@ function IpoCard({ ipo, watched, onWatch }) {
         </Pressable>
       </View>
       <View style={s.metrics}>
-        {metrics.map(([k, v]) => (
+        {metrics.map(([k, v, color]) => (
           <View key={k} style={{ flex: 1 }}>
             <Text style={s.mLabel}>{k}</Text>
-            <Text style={[s.mValue, NUM]} numberOfLines={1}>{v}</Text>
+            <Text style={[s.mValue, NUM, color && { color }]} numberOfLines={1} adjustsFontSizeToFit>{v}</Text>
           </View>
         ))}
       </View>

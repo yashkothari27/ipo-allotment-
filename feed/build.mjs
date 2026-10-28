@@ -33,7 +33,8 @@ export function band(v) {
   return n.length ? [Math.min(...n), Math.max(...n)] : undefined;
 }
 
-export function fromApify(x, sub) {
+// x: a "gmp" row; sub: its "subscription" row; lp: its "listingPerformance" row (field names per the actor's README).
+export function fromApify(x, sub, lp) {
   const f = x.fields || {};
   const s = sub && {
     qib: num(sub.qibX), nii: num(sub.niiX), retail: num(sub.retailX), total: num(sub.totalX),
@@ -42,26 +43,36 @@ export function fromApify(x, sub) {
     id: x.slug,
     name: x.ipoName,
     type: /sme/i.test(x.category) ? 'sme' : 'mainboard',
-    priceBand: band(x.issuePrice ?? x.price ?? f['Price Band']),
+    // The gmp row's issuePrice is only the upper end, so prefer the full band column.
+    priceBand: band(f['Price Band'] ?? f['Price'] ?? x.issuePrice),
     lotSize: num(String(x.lotSize ?? '').replace(/,/g, '')),
     issueSizeCr: num(String(x.issueSizeCr ?? '').replace(/,/g, '')),
     dates: { open: isoDate(x.openDate), close: isoDate(x.closeDate), allotment: isoDate(x.allotmentDate), listing: isoDate(x.listingDate) },
     subscription: s && Object.values(s).some((v) => v != null) ? s : undefined,
-    listingPrice: num(x.listingPrice),
+    gmp: num(x.gmp),
+    gmpPercent: num(x.gmpPercent),
+    issuePrice: num(lp?.issuePrice),
+    listingPrice: num(lp?.listingOpenPrice ?? x.listingPrice),
+    listingGainPercent: num(lp?.listingOpenGainPercent),
+    currentPrice: num(lp?.currentPriceNse ?? lp?.currentPriceBse),
+    currentGainPercent: num(lp?.currentGainPercent),
   };
+}
+
+export function mergeApify(rows) {
+  const by = (t) => Object.fromEntries(rows.filter((r) => r.reportType === t).map((r) => [r.slug, r]));
+  const subs = by('subscription'), lps = by('listingPerformance');
+  return rows.filter((r) => r.reportType === 'gmp' && r.ipoName && r.openDate).map((r) => fromApify(r, subs[r.slug], lps[r.slug]));
 }
 
 async function fromApifyRun(token) {
   const res = await fetch(`https://api.apify.com/v2/acts/data_daemon~india-ipo-tracker/run-sync-get-dataset-items?format=json&clean=true`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ reports: ['gmp', 'subscription'], category: 'all' }),
+    body: JSON.stringify({ reports: ['gmp', 'subscription', 'listingPerformance'], category: 'all' }),
   });
   if (!res.ok) throw new Error(`Apify ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const rows = await res.json();
-  // shortcut: report type is read from whichever field the row carries; confirm against the first real run.
-  const subs = Object.fromEntries(rows.filter((r) => r.totalX != null || r.qibX != null).map((r) => [r.slug, r]));
-  return rows.filter((r) => r.ipoName && r.openDate).map((r) => fromApify(r, subs[r.slug]));
+  return mergeApify(await res.json());
 }
 
 async function fromIpoGuru(key) {
@@ -97,12 +108,22 @@ if (process.argv[2] === '--selfcheck') {
   assert.equal(isoDate('Oct 22, 2026'), '2026-10-22');
   assert.equal(isoDate('2026-10-22'), '2026-10-22');
   assert.deepEqual(band('₹1,065 to ₹1,119'), [1065, 1119]);
-  const a = fromApify({ slug: 'jio', ipoName: 'Jio', category: 'Mainboard', issuePrice: '1065-1119', lotSize: '13', openDate: 'Oct 21, 2026', closeDate: 'Oct 23, 2026' },
-    { slug: 'jio', qibX: '40.1', niiX: '20.5', retailX: '5.2', totalX: '22.19' });
+  const rows = [
+    { reportType: 'gmp', slug: 'jio', ipoName: 'Jio', category: 'Mainboard', issuePrice: 1119, fields: { 'Price Band': '₹1,065 to ₹1,119' }, gmp: 264, gmpPercent: 23.6, lotSize: '13', openDate: '2026-10-21', closeDate: '2026-10-23' },
+    { reportType: 'subscription', slug: 'jio', ipoName: 'Jio', openDate: '2026-10-21', qibX: 40.1, niiX: 20.5, retailX: 5.2, totalX: 22.19 },
+    { reportType: 'listingPerformance', slug: 'jio', ipoName: 'Jio', issuePrice: 1119, listingOpenPrice: 1383, listingOpenGainPercent: 23.6, currentPriceNse: 1400, currentPriceBse: 1399, currentGainPercent: 25.1 },
+  ];
+  const m = mergeApify(rows);
+  assert.equal(m.length, 1); // subscription/listing rows must not become extra IPOs
+  const [a] = m;
   assert.deepEqual(a.priceBand, [1065, 1119]);
   assert.equal(a.lotSize, 13);
   assert.equal(a.subscription.total, 22.19);
   assert.equal(a.type, 'mainboard');
+  assert.equal(a.gmp, 264);
+  assert.equal(a.listingPrice, 1383);
+  assert.equal(a.currentPrice, 1400);
+  assert.deepEqual(fromApify({ slug: 'x', ipoName: 'X', issuePrice: 693 }).priceBand, [693, 693]);
   console.log('ok');
 } else {
   await main();

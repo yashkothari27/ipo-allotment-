@@ -39,4 +39,6 @@ export const sortIpos = (list, now) =>
 export const fmtDate = (s) => (s ? day(s).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—');
 export const fmtINR = (n) => (n == null ? '—' : `₹${Number(n).toLocaleString('en-IN')}`);
 export const priceBand = (p) => (!p ? '—' : p[0] === p[1] ? fmtINR(p[0]) : `₹${p[0]}–${p[1]}`);
-export const minInvestment = (ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBand[1] * ipo.lotSize : null);
+// ₹264 (23.6%) — price with its % change, the way GMP and listing gains are quoted.
+export const withPct = (n, pct) => (n == null ? '—' : `${fmtINR(n)}${pct != null ? ` (${pct > 0 ? '+' : ''}${pct}%)` : ''}`);
+export const minInvestment =(ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBand[1] * ipo.lotSize : null);

@@ -6,12 +6,12 @@ export const DARK = Appearance.getColorScheme() === 'dark';
 const LIGHT_C = {
   bg: '#F3F5F9', card: '#FFFFFF', text: '#0F172A', muted: '#475569', faint: '#94A3B8', border: '#E2E8F0',
   ink: '#0F172A', accent: '#0F172A', accentSoft: 'rgba(15,23,42,0.07)', lime: '#0284C7',
-  danger: '#C2410C', dangerSoft: '#FFF1EA', warn: '#B45309', warnSoft: '#FEF3C7', chip: '#E9EDF3', star: '#F59E0B',
+  danger: '#C2410C', dangerSoft: '#FFF1EA', warn: '#B45309', warnSoft: '#FEF3C7', chip: '#E9EDF3', star: '#F59E0B', up: '#15803D',
 };
 const DARK_C = {
   bg: '#0B1220', card: '#141C2E', text: '#F1F5F9', muted: '#A5B1C4', faint: '#55627A', border: '#24304A',
   ink: '#F1F5F9', accent: '#F1F5F9', accentSoft: 'rgba(241,245,249,0.10)', lime: '#7DD3FC',
-  danger: '#FB923C', dangerSoft: '#3A1D10', warn: '#FBBF24', warnSoft: '#33260A', chip: '#1E2840', star: '#FBBF24',
+  danger: '#FB923C', dangerSoft: '#3A1D10', warn: '#FBBF24', warnSoft: '#33260A', chip: '#1E2840', star: '#FBBF24', up: '#4ADE80',
 };
 export const C = DARK ? DARK_C : LIGHT_C;
 // Text/icons placed on C.accent fills.

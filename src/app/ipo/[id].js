@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import { C, GLASS, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { StatusChip, TypeTag } from '../../components';
-import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand } from '../../ipos';
+import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand, withPct } from '../../ipos';
 
 const TIMELINE = [['open', 'Bidding opens'], ['close', 'Bidding closes'], ['allotment', 'Allotment'], ['listing', 'Listing']];
 const SUBS = [['qib', 'QIB'], ['nii', 'NII'], ['retail', 'Retail']];
@@ -56,6 +56,13 @@ export default function IpoDetail() {
           <Fact label="Min. investment" value={fmtINR(minInvestment(ipo))} />
           <View style={s.factRule} />
           <Fact label="Issue size" value={ipo.issueSizeCr ? `₹${ipo.issueSizeCr.toLocaleString('en-IN')} Cr` : '—'} />
+        </View>
+        <View style={s.facts}>
+          <Fact label="GMP" value={withPct(ipo.gmp, ipo.gmpPercent)} />
+          <View style={s.factRule} />
+          <Fact label="Listing price" value={withPct(ipo.listingPrice, ipo.listingGainPercent)} />
+          <View style={s.factRule} />
+          <Fact label="Current price" value={withPct(ipo.currentPrice, ipo.currentGainPercent)} />
         </View>
 
         <Text style={s.h2} accessibilityRole="header">Timeline</Text>
