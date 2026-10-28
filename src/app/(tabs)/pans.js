@@ -89,9 +89,9 @@ export default function Pans() {
             <Avatar name={panName(item)} size={46} />
             <Pressable style={{ flex: 1 }} onPress={() => setShown(shown === item.pan ? null : item.pan)} accessibilityRole="button"
               accessibilityLabel={`${panName(item)}. ${shown === item.pan ? item.pan.split('').join(' ') : 'PAN hidden'}`} accessibilityHint="Shows or hides the full PAN">
-              <Text style={s.name} numberOfLines={1}>{panName(item)}</Text>
+              {!!item.label && <Text style={s.name} numberOfLines={1}>{item.label}</Text>}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={[s.pan, NUM]}>{shown === item.pan ? item.pan : maskPan(item.pan)}</Text>
+                <Text style={[item.label ? s.pan : s.name, NUM]}>{shown === item.pan ? item.pan : maskPan(item.pan)}</Text>
                 <Feather name={shown === item.pan ? 'eye-off' : 'eye'} size={14} color={C.muted} style={{ marginTop: 2 }} />
               </View>
             </Pressable>

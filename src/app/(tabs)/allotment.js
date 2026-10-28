@@ -150,7 +150,7 @@ export default function Allotment() {
                 <Avatar name={panName(x)} size={38} />
                 <View style={{ flex: 1 }}>
                   <Text style={s.panLabel} numberOfLines={1}>{panName(x)}</Text>
-                  <Text style={[s.panText, NUM]}>{maskPan(x.pan)}</Text>
+                  {!!x.label && <Text style={[s.panText, NUM]}>{maskPan(x.pan)}</Text>}
                 </View>
                 {r?.status === 'checking' ? (
                   <ActivityIndicator color={C.accent} accessibilityLabel="Checking" />
