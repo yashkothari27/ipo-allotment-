@@ -1,12 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { C, DARK, F, STATUS, hue } from './theme';
+import { C, DARK, F } from './theme';
 
 export function StatusChip({ status }) {
   const st = STATUS[status];
   return (
-    <View style={[s.chip, { backgroundColor: st.bg }]}>
-      <View style={[s.dot, { backgroundColor: st.fg }]} />
+    <View style={[s.chip, { backgroundColor: st.bg, paddingHorizontal: 8, paddingVertical: 3 }]}>
+      <View style={[s.dot, { backgroundColor: st.fg, width: 4, height: 4 }]} />
       <Text style={[s.chipText, { color: st.fg }]}>{st.label}</Text>
     </View>
   );
@@ -26,7 +26,7 @@ export function Avatar({ name, size = 44 }) {
   );
 }
 
-// Segmented control; options = [[value, label], ...]
+// Minimal segmented control
 export function Segmented({ options, value, onChange, label }) {
   return (
     <View style={s.seg} accessibilityRole="tablist" accessibilityLabel={label}>
@@ -44,25 +44,13 @@ export function Segmented({ options, value, onChange, label }) {
 }
 
 const s = StyleSheet.create({
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start' },
-  dot: { width: 6, height: 6, borderRadius: 3 },
-  chipText: { fontFamily: F.bold, fontSize: 12 },
-  tag: { fontFamily: F.bold, fontSize: 11, letterSpacing: 0.6, color: C.muted },
-  seg: { flexDirection: 'row', backgroundColor: C.chip, borderRadius: 12, padding: 4 },
-  segItem: { flex: 1, minHeight: 40, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  segOn: { backgroundColor: C.card, shadowColor: '#101828', shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  segText: { fontFamily: F.semibold, fontSize: 14, color: C.muted },
-  segTextOn: { color: C.accent, fontFamily: F.bold },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start' },
+  dot: { width: 4, height: 4, borderRadius: 2 },
+  chipText: { fontFamily: F.bold, fontSize: 11 },
+  tag: { fontFamily: F.bold, fontSize: 10, letterSpacing: 0.4, color: C.muted },
+  seg: { flexDirection: 'row', backgroundColor: C.chip, borderRadius: 12, padding: 3 },
+  segItem: { flex: 1, minHeight: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  segOn: { backgroundColor: C.accent, borderRadius: 8 },
+  segText: { fontFamily: F.semibold, fontSize: 13, color: C.muted },
+  segTextOn: { color: C.text, fontFamily: F.bold },
 });
-
-// App-wide colour field behind every screen, so glass surfaces have something to refract.
-export function Backdrop() {
-  return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <LinearGradient colors={DARK ? ['#0B1220', '#0E1626', '#120F1E'] : ['#EEF4FB', '#F5F6FA', '#FBF1EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={[DARK ? 'rgba(56,189,248,0.14)' : 'rgba(186,230,253,0.7)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['transparent', DARK ? 'rgba(251,146,60,0.08)' : 'rgba(254,215,170,0.5)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['transparent', DARK ? 'rgba(244,114,182,0.07)' : 'rgba(251,207,232,0.45)']} start={{ x: 0.3, y: 0.5 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-    </View>
-  );
-}
