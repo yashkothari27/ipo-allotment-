@@ -1,13 +1,21 @@
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
+import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ShareIntentProvider } from 'expo-share-intent';
+import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { useFonts, Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, Manrope_800ExtraBold } from '@expo-google-fonts/manrope';
 import { C, DARK, F } from '../theme';
 import { LockGate } from '../lock';
 import { Backdrop } from '../components';
+
+// A PAN shared while the app is already open: jump to the PANs tab, which reads and saves it.
+function ShareToPans() {
+  const { hasShareIntent } = useShareIntentContext();
+  useEffect(() => { if (hasShareIntent) router.navigate('/pans'); }, [hasShareIntent]);
+  return null;
+}
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
@@ -19,6 +27,7 @@ export default function RootLayout() {
       <StatusBar style={DARK ? 'light' : 'dark'} />
       <LockGate>
       <Backdrop />
+      <ShareToPans />
       <Stack screenOptions={{
         headerTintColor: C.text,
         headerStyle: { backgroundColor: 'transparent' },

@@ -110,7 +110,7 @@ export default function Pans() {
         }
       />
 
-      <Pressable onPress={() => setOpen(true)} style={({ pressed }) => [s.fab, { bottom: 112 }, pressed && { transform: [{ scale: 0.96 }] }]}
+      <Pressable onPress={() => setOpen(true)} style={({ pressed }) => [s.fab, { bottom: insets.bottom + 92 }, pressed && { transform: [{ scale: 0.96 }] }]}
         accessibilityRole="button" accessibilityLabel="Add PAN">
         <Feather name="plus" size={22} color={ON_ACCENT} />
         <Text style={s.fabText}>Add PAN</Text>
