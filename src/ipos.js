@@ -2,9 +2,12 @@ import bundled from '../data/ipos.json';
 
 // Raw URL of feed/ipos.json in your GitHub repo (updated by GitHub Actions or manual run).
 // This feed contains 30+ IPOs with GMP, subscription, and allotment data.
-// e.g. https://raw.githubusercontent.com/<you>/ipo-allotment/main/feed/ipos.json
+// e.g. https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json
 export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json';
 
+// Set via: IPO_APIFY_TOKEN=apify_token_xxxx npx expo start
+// (Kept for reference; the app now uses the GitHub feed as primary source.)
+export const IPO_APIFY_TOKEN = undefined;
 
 // ---------------------------------------------------------------------------
 // fetchFeed: tries GitHub URL first, then falls back to bundled data.
@@ -53,22 +56,6 @@ export const withPct = (n, pct) => (n == null ? '—' : `${fmtINR(n)}${pct != nu
 export const minInvestment =(ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBand[1] * ipo.lotSize : null);
 
 // ---------------------------------------------------------------------------
-// Load IPOs: priority order
-//   1) GitHub feed (primary free source)
-//   2) Bundled sample data (always available — development / offline)
-// ---------------------------------------------------------------------------
-export async function loadIpos() {
-  // 1) Try GitHub feed first
-  const githubData = await fetchGitHubFeed();
-  if (githubData.ipos && githubData.ipos.length > 0) {
-    return { ipos: githubData.ipos, source: githubData.source, updatedAt: githubData.updatedAt };
-  }
-
-  // 2) Fallback to bundled sample data
-  return { ipos: bundled.ipos, source: 'bundled', updatedAt: bundled.updatedAt };
-}
-
-// ---------------------------------------------------------------------------
 // Map a raw GitHub IPO row into the app's IPO item shape.
 // This mirrors the transformation logic from feed/build.mjs / data_daemon/india-ipo-tracker.
 // ---------------------------------------------------------------------------
@@ -97,6 +84,11 @@ function mapGitHubIpo(raw) {
   // GMP: may be number or "0"
   const gmpVal = num(raw.gmp);
 
+  // Logo: URL from raw data or placeholder
+  const logo = raw.logo || raw.logoUrl || raw.image || raw.poster
+    ? raw.logo || raw.logoUrl || raw.image || raw.poster
+    : `https://via.placeholder.com/150/1F2937/FAFAFA?text=${raw.slug?.slice(0,3).toUpperCase() || 'IPO'}`;
+
   return {
     id: raw.slug || raw.id,
     name: raw.ipoName || raw.name,
@@ -104,12 +96,7 @@ function mapGitHubIpo(raw) {
     priceBand: band(raw['Price Band'] ?? raw.priceBand ?? raw.issuePrice),
     lotSize: num(raw.lotSize),
     issueSizeCr: num(raw.issueSizeCr),
-    dates: {
-      open: isoDate(raw.openDate),
-      close: isoDate(raw.closeDate),
-      allotment: isoDate(raw.allotmentDate),
-      listing: isoDate(raw.listingDate),
-    },
+    dates: { open: isoDate(raw.openDate), close: isoDate(raw.closeDate), allotment: isoDate(raw.allotmentDate), listing: isoDate(raw.listingDate) },
     subscription: raw.subscription
       ? { qib: num(raw.qibX), nii: num(raw.niiX), retail: num(raw.retailX), total: num(raw.totalX) }
       : undefined,
@@ -120,12 +107,15 @@ function mapGitHubIpo(raw) {
     listingGainPercent: num(raw.listingOpenGainPercent),
     currentPrice: num(raw.currentPriceNse ?? raw.currentPriceBse),
     currentGainPercent: num(raw.currentGainPercent),
+    logo,  // <-- ADDED logo field
   };
 }
 
 // ---------------------------------------------------------------------------
 // Exported shape: { ipos, source, updatedAt }
 // ---------------------------------------------------------------------------
+export { loadIpos };
 
 // Keep backward-compatible names so screens importing from '../ipos' still work:
 // (the helpers are also named exports from this module, so import * as ipos works.)
+export { ipoStatus, sortIpos, fmtDate, fmtINR, priceBand, withPct, minInvestment };
