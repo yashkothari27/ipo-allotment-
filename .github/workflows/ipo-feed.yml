@@ -21,3 +21,6 @@ jobs:
           git config user.email "ipo-feed-bot@users.noreply.github.com"
           git add feed/ipos.json
           git diff --cached --quiet || (git commit -m "Update IPO feed" && git push)
+      - name: Refresh jsDelivr copy
+        # The app reads the feed through jsDelivr (fast in India); purge so it serves the new file right away.
+        run: curl -fsS https://purge.jsdelivr.net/gh/${{ github.repository }}@main/feed/ipos.json || true

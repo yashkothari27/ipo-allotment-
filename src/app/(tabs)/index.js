@@ -8,7 +8,7 @@ import { Avatar, StatusChip } from '../../components';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CountUp, FadeIn, Marquee, PressScale, Shimmer, useReduceMotion } from '../../motion';
 import { useStored } from '../../store';
-import { fmtDate, fmtINR, ipoStatus, loadIpos, priceBand, sortIpos, withPct } from '../../ipos';
+import { loadCachedIpos, fmtDate, fmtINR, ipoStatus, loadIpos, priceBand, sortIpos, withPct } from '../../ipos';
 
 const TABS = [['open', 'Open'], ['upcoming', 'Upcoming'], ['closed', 'Closed'], ['listed', 'Listed'], ['watch', 'Watchlist']];
 const TYPES = [['all', 'All'], ['mainboard', 'Mainboard'], ['sme', 'SME']];
@@ -26,7 +26,11 @@ export default function IpoList() {
     setFeed(await loadIpos());
     setRefreshing(false);
   }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Show the last saved list immediately, then refresh it from the network.
+    loadCachedIpos().then((c) => c && setFeed((f) => f || c));
+    load();
+  }, [load]);
 
   // Sliding pill behind the selected status tab.
   const reduce = useReduceMotion();

@@ -1,29 +1,51 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import bundled from '../data/ipos.json';
 
-// Raw URL of feed/ipos.json in your GitHub repo (updated by GitHub Actions or manual run).
-// This feed contains 30+ IPOs with GMP, subscription, and allotment data.
-// e.g. https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json
-export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json';
+// feed/ipos.json in the GitHub repo (rebuilt by .github/workflows/ipo-feed.yml).
+// jsDelivr serves it in ~0.5 s; raw.githubusercontent.com takes 10 s+ or hangs on some Indian networks, so it is the fallback.
+export const IPO_FEED_URLS = [
+  'https://cdn.jsdelivr.net/gh/yashkothari27/ipo-allotment-@main/feed/ipos.json',
+  'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json',
+];
+const CACHE_KEY = 'ipoFeedCache';
 
-// Set via: IPO_APIFY_TOKEN=apify_token_xxxx npx expo start
-// (Kept for reference; the app now uses the GitHub feed as primary source.)
-
-// ---------------------------------------------------------------------------
-// fetchFeed: tries GitHub URL first, then falls back to bundled data.
-// ---------------------------------------------------------------------------
-export async function fetchGitHubFeed() {
+// fetch with a hard deadline: a hanging request must never leave the list loading forever.
+async function fetchJson(url, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    const res = await fetch(IPO_FEED_URL, { headers: { 'Cache-Control': 'no-cache' } });
-    if (!res.ok) throw new Error(`GitHub ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data.ipos)) throw new Error('Feed has no "ipos" array');
-    // Drop malformed entries rather than letting one bad row crash the list.
-    const ipos = data.ipos.filter((i) => i && typeof i.id === 'string' && typeof i.name === 'string' && (!i.dates || typeof i.dates === 'object')
-      && (!i.priceBand || (Array.isArray(i.priceBand) && i.priceBand.every(Number.isFinite))));
-    return { ipos, source: 'github', updatedAt: data.updatedAt };
-  } catch (e) {
-    console.warn('GitHub feed fetch failed, falling back to bundled data:', e.message);
-    return { ipos: [], source: 'github', error: e.message };
+    const res = await fetch(url, { signal: ctrl.signal, headers: { 'Cache-Control': 'no-cache' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+export async function fetchGitHubFeed() {
+  let lastError;
+  for (const url of IPO_FEED_URLS) {
+    try {
+      const data = await fetchJson(url, 8000);
+      if (!Array.isArray(data.ipos)) throw new Error('Feed has no "ipos" array');
+      // Drop malformed entries rather than letting one bad row crash the list.
+      const ipos = data.ipos.filter((i) => i && typeof i.id === 'string' && typeof i.name === 'string' && (!i.dates || typeof i.dates === 'object')
+        && (!i.priceBand || (Array.isArray(i.priceBand) && i.priceBand.every(Number.isFinite))));
+      return { ipos, source: 'github', updatedAt: data.updatedAt, attribution: data.attribution };
+    } catch (e) {
+      lastError = e.name === 'AbortError' ? 'timed out' : e.message;
+    }
+  }
+  return { ipos: [], source: 'github', error: lastError };
+}
+
+// Last good feed saved on the phone, so the list shows instantly on the next launch.
+export async function loadCachedIpos() {
+  try {
+    const v = await AsyncStorage.getItem(CACHE_KEY);
+    return v ? { ...JSON.parse(v), source: 'cache' } : null;
+  } catch {
+    return null;
   }
 }
 
@@ -58,8 +80,13 @@ export const minInvestment =(ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBa
 export async function loadIpos() {
   const githubData = await fetchGitHubFeed();
   if (githubData.ipos && githubData.ipos.length > 0) {
-    return { ipos: githubData.ipos, source: githubData.source, updatedAt: githubData.updatedAt };
+    const feed = { ipos: githubData.ipos, updatedAt: githubData.updatedAt, attribution: githubData.attribution };
+    AsyncStorage.setItem(CACHE_KEY, JSON.stringify(feed)).catch(() => {});
+    return { ...feed, source: githubData.source };
   }
+  // Offline or blocked: last saved list beats the two sample IPOs.
+  const cached = await loadCachedIpos();
+  if (cached) return { ...cached, error: githubData.error };
   return { ipos: bundled.ipos, source: 'bundled', updatedAt: bundled.updatedAt, error: githubData.error };
 }
 
