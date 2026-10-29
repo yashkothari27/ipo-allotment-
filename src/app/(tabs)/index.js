@@ -218,7 +218,13 @@ function IpoCard({ ipo, watched, onWatch }) {
       </View>
       <View style={s.cardFoot}>
         <StatusChip status={status} />
-        {ipo.dates?.allotment && <Text style={s.footNote}>Allotment {fmtDate(ipo.dates.allotment)}</Text>}
+        {ipo.dates?.allotment && ipo.dates.allotment <= new Date().toISOString().slice(0, 10) ? (
+          <Pressable onPress={() => router.navigate({ pathname: '/allotment', params: { ipo: ipo.name } })} hitSlop={8}
+            style={s.allotBtn} accessibilityRole="button" accessibilityLabel={`Check allotment for ${ipo.name}`}>
+            <Feather name="check-circle" size={14} color={ON_ACCENT} />
+            <Text style={s.allotBtnText}>Check allotment</Text>
+          </Pressable>
+        ) : ipo.dates?.allotment ? <Text style={s.footNote}>Allotment {fmtDate(ipo.dates.allotment)}</Text> : null}
       </View>
     </PressScale>
   );
@@ -285,6 +291,8 @@ const s = StyleSheet.create({
   mLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   mValue: { fontFamily: F.bold, fontSize: 15, color: C.text, marginTop: 2 },
   cardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },
+  allotBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.accent, borderRadius: 999, paddingHorizontal: 12, minHeight: 34 },
+  allotBtnText: { fontFamily: F.bold, fontSize: 13, color: ON_ACCENT },
   footNote: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   empty: { alignItems: 'center', paddingVertical: 48, gap: 8 },
   emptyIcon: { width: 56, height: 56, borderRadius: 18, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },

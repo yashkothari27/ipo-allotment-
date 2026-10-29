@@ -9,11 +9,25 @@ import { useFonts, Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, M
 import { C, DARK, F } from '../theme';
 import { LockGate } from '../lock';
 import { Backdrop } from '../components';
+import * as Notifications from 'expo-notifications';
+import '../alerts'; // defines the background allotment task at startup
 
 // A PAN shared while the app is already open: jump to the PANs tab, which reads and saves it.
 function ShareToPans() {
   const { hasShareIntent } = useShareIntentContext();
   useEffect(() => { if (hasShareIntent) router.navigate('/pans'); }, [hasShareIntent]);
+  return null;
+}
+
+// Tapping an allotment notification opens the Allotment tab on that IPO.
+function NotificationTaps() {
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((r) => {
+      const { url, ipo } = r.notification.request.content.data || {};
+      if (url) router.navigate({ pathname: url, params: ipo ? { ipo } : {} });
+    });
+    return () => sub.remove();
+  }, []);
   return null;
 }
 
@@ -28,6 +42,7 @@ export default function RootLayout() {
       <LockGate>
       <Backdrop />
       <ShareToPans />
+      <NotificationTaps />
       <Stack screenOptions={{
         headerTintColor: C.text,
         headerStyle: { backgroundColor: 'transparent' },

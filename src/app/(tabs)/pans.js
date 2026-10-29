@@ -7,6 +7,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { extractPans } from '../../registrars';
 import { maskPan, panName, useStored } from '../../store';
 import { authenticate } from '../../lock';
+import { disableAlerts, enableAlerts } from '../../alerts';
 import { C, GLASS, DARK, F, NUM, ON_ACCENT } from '../../theme';
 import { Avatar } from '../../components';
 import { FadeIn } from '../../motion';
@@ -22,6 +23,7 @@ export default function Pans() {
   const [error, setError] = useState('');
   const [shown, setShown] = useState(null); // PAN currently revealed
   const [lockOn, saveLock] = useStored('applock', false);
+  const [alertsOn, saveAlerts] = useStored('allotAlerts', false);
   const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntentContext();
 
   const save = (next) => savePans(next).catch(() => Alert.alert("Couldn't save", 'Your PAN list was not saved. Try again.'));
@@ -42,6 +44,14 @@ export default function Pans() {
     }
     resetShareIntent();
   }, [hasShareIntent]);
+
+  const toggleAlerts = async (on) => {
+    if (!on) { await disableAlerts(); return saveAlerts(false); }
+    if (!(await enableAlerts())) {
+      return Alert.alert('Notifications are off', 'Allow notifications for IPO Desk in your phone settings to get allotment alerts.');
+    }
+    saveAlerts(true);
+  };
 
   const toggleLock = async (on) => {
     if (on && (await LocalAuthentication.getEnrolledLevelAsync()) === LocalAuthentication.SecurityLevel.NONE) {
@@ -80,6 +90,15 @@ export default function Pans() {
                 <Text style={s.lockHint}>Ask for fingerprint, face or PIN when opening the app</Text>
               </View>
               <Switch value={lockOn} onValueChange={toggleLock} accessibilityLabelledBy="lockL"
+                trackColor={{ true: C.accent, false: C.border }} thumbColor="#fff" />
+            </View>
+            <View style={[s.lockRow, { marginTop: 10 }]}>
+              <View style={s.lockIcon}><Feather name="bell" size={18} color={C.accent} /></View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.name} nativeID="alertL">Allotment alerts</Text>
+                <Text style={s.lockHint}>Notify me when results are out for my saved PANs</Text>
+              </View>
+              <Switch value={alertsOn} onValueChange={toggleAlerts} accessibilityLabelledBy="alertL"
                 trackColor={{ true: C.accent, false: C.border }} thumbColor="#fff" />
             </View>
           </View>

@@ -60,3 +60,14 @@ export function useStored(key, initial = []) {
 export const maskPan = (p = '') => (p.length === 10 ? `${p.slice(0, 3)}••••${p.slice(7)}` : p);
 // Older builds saved the PAN itself as the name; never show that unmasked.
 export const panName = (x) => (x.label && x.label !== x.pan ? x.label : maskPan(x.pan));
+
+// Read a stored value outside React (background tasks). Same storage rules as useStored.
+export async function readStored(key, initial = []) {
+  try {
+    const v = await read(key);
+    return v ? JSON.parse(v) : initial;
+  } catch {
+    return initial;
+  }
+}
+export const writeStored = (key, value) => write(key, JSON.stringify(value));
