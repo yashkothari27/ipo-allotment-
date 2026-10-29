@@ -56,8 +56,10 @@ export default function IpoList() {
       <View style={[s.hero, { marginTop: insets.top + 8 }]}>
         {/* Glass sheen: light catching the top-left of the pane */}
         <LinearGradient colors={[DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.75)', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.6, y: 0.7 }} style={StyleSheet.absoluteFill} />
-        <Text style={s.kicker}>IPO desk</Text>
-        <Text style={s.title} accessibilityRole="header">Every issue, one place</Text>
+        <View style={s.heroTop}>
+          <Text style={s.title} accessibilityRole="header">IPO Desk</Text>
+          {feed?.updatedAt && <Text style={s.kicker}>Updated {fmtDate(feed.updatedAt)}</Text>}
+        </View>
         <View style={s.stats}>
           {['open', 'upcoming', 'closed'].map((k) => (
             <View key={k} style={s.stat}>
@@ -212,18 +214,19 @@ const Skeleton = () => (
 );
 
 const s = StyleSheet.create({
-  hero: { ...GLASS, marginHorizontal: 12, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 18, borderRadius: 30, overflow: 'hidden' },
-  kicker: { fontFamily: F.bold, fontSize: 12, letterSpacing: 1.2, color: C.muted, textTransform: 'uppercase' },
-  title: { fontFamily: F.heavy, fontSize: 26, color: C.text, letterSpacing: -0.5, marginTop: 4 },
-  stats: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  stat: { flex: 1, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)', borderTopColor: DARK ? 'rgba(255,255,255,0.2)' : '#FFFFFF', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 12 },
-  statNum: { fontFamily: F.heavy, fontSize: 22, color: C.text },
+  hero: { ...GLASS, marginHorizontal: 12, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, borderRadius: 26, overflow: 'hidden' },
+  heroTop: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  kicker: { fontFamily: F.semibold, fontSize: 12, color: C.muted },
+  title: { fontFamily: F.heavy, fontSize: 22, color: C.text, letterSpacing: -0.4 },
+  stats: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  stat: { flex: 1, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)', borderTopColor: DARK ? 'rgba(255,255,255,0.2)' : '#FFFFFF', borderRadius: 18, paddingVertical: 8, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'baseline', gap: 6 },
+  statNum: { fontFamily: F.heavy, fontSize: 18, color: C.text },
   statLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   tabsBar: { flexGrow: 0, flexShrink: 0, height: 40, marginVertical: 14 }, // fixed height: Android was collapsing this row and clipping the labels
   tabs: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999 },
   pill: { position: 'absolute', left: 0, top: 0, height: 40, borderRadius: 999, backgroundColor: C.accent },
-  ticker: { marginTop: 14, marginHorizontal: -18, paddingVertical: 10, backgroundColor: DARK ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.45)', borderTopWidth: 1, borderTopColor: DARK ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.9)' },
+  ticker: { marginTop: 10, marginHorizontal: -16, marginBottom: -12, paddingVertical: 8, backgroundColor: DARK ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.45)', borderTopWidth: 1, borderTopColor: DARK ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.9)' },
   tick: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14 },
   tickDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lime },
   tickName: { fontFamily: F.semibold, fontSize: 13, color: C.text, maxWidth: 180 },
