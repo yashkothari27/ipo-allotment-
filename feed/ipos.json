@@ -6,7 +6,7 @@
    "name": "Vedant Poly Fabs",
    "type": "sme",
    "priceBand": [
-    94,
+    88,
     94
    ],
    "lotSize": 1200,
@@ -25,7 +25,7 @@
    "name": "HGS (India)",
    "type": "sme",
    "priceBand": [
-    120,
+    114,
     120
    ],
    "lotSize": 1200,
@@ -44,7 +44,7 @@
    "name": "Johnsoncab Electricals",
    "type": "sme",
    "priceBand": [
-    200,
+    190,
     200
    ],
    "lotSize": 600,
@@ -63,7 +63,7 @@
    "name": "Vectras Enprocon",
    "type": "sme",
    "priceBand": [
-    105,
+    99,
     105
    ],
    "lotSize": 1200,
@@ -82,7 +82,7 @@
    "name": "Maxwell Engineering Solutions",
    "type": "sme",
    "priceBand": [
-    158,
+    150,
     158
    ],
    "lotSize": 800,
@@ -101,7 +101,7 @@
    "name": "Antala Industries",
    "type": "sme",
    "priceBand": [
-    67,
+    63,
     67
    ],
    "lotSize": 2000,
@@ -112,12 +112,6 @@
     "allotment": "2026-11-03",
     "listing": "2026-11-05"
    },
-   "subscription": {
-    "qib": 0,
-    "nii": 0,
-    "retail": 0.01,
-    "total": 0.01
-   },
    "gmp": 0,
    "gmpPercent": 0
   },
@@ -126,7 +120,7 @@
    "name": "Bombay Coated and Special Steels",
    "type": "mainboard",
    "priceBand": [
-    82,
+    78,
     82
    ],
    "lotSize": 182,
@@ -137,12 +131,6 @@
     "allotment": "2026-11-03",
     "listing": "2026-11-05"
    },
-   "subscription": {
-    "qib": 1.41,
-    "nii": 0.14,
-    "retail": 0.36,
-    "total": 0.85
-   },
    "gmp": 9,
    "gmpPercent": 10.98
   },
@@ -151,7 +139,7 @@
    "name": "M.K.Sons Fine Jewels",
    "type": "mainboard",
    "priceBand": [
-    162,
+    153,
     162
    ],
    "lotSize": 91,
@@ -161,12 +149,6 @@
     "close": "2026-10-30",
     "allotment": "2026-11-02",
     "listing": "2026-11-04"
-   },
-   "subscription": {
-    "qib": 0.96,
-    "nii": 1.47,
-    "retail": 0.46,
-    "total": 0.82
    },
    "gmp": 15,
    "gmpPercent": 8.64
@@ -187,11 +169,6 @@
     "allotment": "2026-11-02",
     "listing": "2026-11-04"
    },
-   "subscription": {
-    "nii": 0.1,
-    "retail": 1.11,
-    "total": 0.61
-   },
    "gmp": 38,
    "gmpPercent": 13.3
   },
@@ -200,7 +177,7 @@
    "name": "Carver Roboweld",
    "type": "sme",
    "priceBand": [
-    80,
+    76,
     80
    ],
    "lotSize": 1600,
@@ -211,12 +188,6 @@
     "allotment": "2026-11-02",
     "listing": "2026-11-04"
    },
-   "subscription": {
-    "qib": 0,
-    "nii": 0.76,
-    "retail": 0.3,
-    "total": 0.32
-   },
    "gmp": 0,
    "gmpPercent": 0
   },
@@ -225,7 +196,7 @@
    "name": "Wiscon Industries",
    "type": "sme",
    "priceBand": [
-    204,
+    194,
     204
    ],
    "lotSize": 600,
@@ -236,12 +207,6 @@
     "allotment": "2026-10-30",
     "listing": "2026-11-03"
    },
-   "subscription": {
-    "qib": 2,
-    "nii": 0.05,
-    "retail": 0.48,
-    "total": 0.88
-   },
    "gmp": 0,
    "gmpPercent": 0
   },
@@ -250,7 +215,7 @@
    "name": "SFC Environmental Technologies",
    "type": "mainboard",
    "priceBand": [
-    330,
+    313,
     330
    ],
    "lotSize": 45,
@@ -260,12 +225,6 @@
     "close": "2026-10-29",
     "allotment": "2026-10-30",
     "listing": "2026-11-03"
-   },
-   "subscription": {
-    "qib": 0.61,
-    "nii": 0.89,
-    "retail": 0.48,
-    "total": 0.61
    },
    "gmp": 32,
    "gmpPercent": 2.73
@@ -286,12 +245,6 @@
     "allotment": "2026-10-30",
     "listing": "2026-11-03"
    },
-   "subscription": {
-    "qib": 12.3,
-    "nii": 209.9,
-    "retail": 57.84,
-    "total": 77.41
-   },
    "gmp": 51,
    "gmpPercent": 34
   },
@@ -310,12 +263,6 @@
     "close": "2026-10-28",
     "allotment": "2026-10-29",
     "listing": "2026-11-02"
-   },
-   "subscription": {
-    "qib": 13.8,
-    "nii": 4.81,
-    "retail": 1.08,
-    "total": 5.51
    },
    "gmp": 121,
    "gmpPercent": 1.62
@@ -336,12 +283,6 @@
     "allotment": "2026-10-28",
     "listing": "2026-10-30"
    },
-   "subscription": {
-    "qib": 5.06,
-    "nii": 12.26,
-    "retail": 2.72,
-    "total": 5.44
-   },
    "gmp": 0,
    "gmpPercent": 0
   },
@@ -361,19 +302,8 @@
     "allotment": "2026-10-26",
     "listing": "2026-10-28"
    },
-   "subscription": {
-    "qib": 3.247,
-    "nii": 0.6903,
-    "retail": 2.1008,
-    "total": 2.3413
-   },
    "gmp": 96,
-   "gmpPercent": 1.88,
-   "issuePrice": 693,
-   "listingPrice": 720,
-   "listingGainPercent": 3.9,
-   "currentPrice": 735.6,
-   "currentGainPercent": 6.37
+   "gmpPercent": 1.88
   },
   {
    "id": "jio-platforms-ipo",
@@ -392,12 +322,7 @@
     "listing": "2026-10-28"
    },
    "gmp": 273,
-   "gmpPercent": 22.34,
-   "issuePrice": 1119,
-   "listingPrice": 1358,
-   "listingGainPercent": 21.36,
-   "currentPrice": 1417.5,
-   "currentGainPercent": 26.66
+   "gmpPercent": 22.34
   },
   {
    "id": "zetwerk-ipo",
@@ -415,19 +340,8 @@
     "allotment": "2026-10-21",
     "listing": "2026-10-23"
    },
-   "subscription": {
-    "qib": 4.7107,
-    "nii": 1.4459,
-    "retail": 0.769,
-    "total": 3.0978
-   },
    "gmp": 30,
-   "gmpPercent": 0.79,
-   "issuePrice": 151,
-   "listingPrice": 159.25,
-   "listingGainPercent": 5.46,
-   "currentPrice": 158.07,
-   "currentGainPercent": 4.93
+   "gmpPercent": 0.79
   },
   {
    "id": "tonbo-imaging-india-ipo",
@@ -445,19 +359,8 @@
     "allotment": "2026-10-21",
     "listing": "2026-10-23"
    },
-   "subscription": {
-    "qib": 293.557,
-    "nii": 156.361,
-    "retail": 31.1113,
-    "total": 132.8059
-   },
    "gmp": 516,
-   "gmpPercent": 64.57,
-   "issuePrice": 700,
-   "listingPrice": 1160,
-   "listingGainPercent": 65.71,
-   "currentPrice": 1219.5,
-   "currentGainPercent": 73.51
+   "gmpPercent": 64.57
   },
   {
    "id": "sahajanand-medical-technologies-ipo",
@@ -475,19 +378,8 @@
     "allotment": "2026-10-21",
     "listing": "2026-10-23"
    },
-   "subscription": {
-    "qib": 34.6961,
-    "nii": 14.642,
-    "retail": 3.0389,
-    "total": 14.2061
-   },
    "gmp": 43,
-   "gmpPercent": 4.94,
-   "issuePrice": 344,
-   "listingPrice": 371.15,
-   "listingGainPercent": 7.89,
-   "currentPrice": 471.05,
-   "currentGainPercent": 36.96
+   "gmpPercent": 4.94
   },
   {
    "id": "bonfiglioli-transmissions-ipo",
@@ -505,19 +397,8 @@
     "allotment": "2026-10-21",
     "listing": "2026-10-23"
    },
-   "subscription": {
-    "qib": 120.784,
-    "nii": 40.3865,
-    "retail": 5.9028,
-    "total": 46.0515
-   },
    "gmp": 178,
-   "gmpPercent": 11.26,
-   "issuePrice": 586,
-   "listingPrice": 586,
-   "listingGainPercent": 0,
-   "currentPrice": 608.45,
-   "currentGainPercent": 4.22
+   "gmpPercent": 11.26
   },
   {
    "id": "shellz-india-ipo",
@@ -535,19 +416,8 @@
     "allotment": "2026-10-21",
     "listing": "2026-10-23"
    },
-   "subscription": {
-    "qib": 41.918,
-    "nii": 86.4145,
-    "retail": 56.0923,
-    "total": 58.541
-   },
    "gmp": 46,
-   "gmpPercent": 3.91,
-   "issuePrice": 179,
-   "listingPrice": 179,
-   "listingGainPercent": 0,
-   "currentPrice": 161.7,
-   "currentGainPercent": -9.66
+   "gmpPercent": 3.91
   },
   {
    "id": "ravita-engineering-services-ipo",
@@ -565,19 +435,8 @@
     "allotment": "2026-10-19",
     "listing": "2026-10-22"
    },
-   "subscription": {
-    "qib": 13.2096,
-    "nii": 7.4195,
-    "retail": 3.4972,
-    "total": 7.1125
-   },
    "gmp": 12,
-   "gmpPercent": 0.89,
-   "issuePrice": 112,
-   "listingPrice": 112,
-   "listingGainPercent": 0,
-   "currentPrice": 103.45,
-   "currentGainPercent": -7.63
+   "gmpPercent": 0.89
   },
   {
    "id": "fusion-cx-ipo",
@@ -595,199 +454,8 @@
     "allotment": "2026-10-19",
     "listing": "2026-10-22"
    },
-   "subscription": {
-    "qib": 4.2112,
-    "nii": 4.7301,
-    "retail": 5.9864,
-    "total": 4.6755
-   },
    "gmp": 55,
-   "gmpPercent": 4.67,
-   "issuePrice": 289,
-   "listingPrice": 305,
-   "listingGainPercent": 5.54,
-   "currentPrice": 272.45,
-   "currentGainPercent": -4.9
-  },
-  {
-   "id": "hd-fire-protect-ipo",
-   "name": "HD Fire Protect",
-   "type": "mainboard",
-   "priceBand": [
-    271,
-    271
-   ],
-   "lotSize": 55,
-   "issueSizeCr": 712.13,
-   "dates": {
-    "open": "2026-10-13",
-    "close": "2026-10-15",
-    "allotment": "2026-10-16",
-    "listing": "2026-10-21"
-   },
-   "subscription": {
-    "qib": 256.652,
-    "nii": 203.205,
-    "retail": 30.5549,
-    "total": 131.7314
-   },
-   "gmp": 91,
-   "gmpPercent": 25.83,
-   "issuePrice": 271,
-   "listingPrice": 335,
-   "listingGainPercent": 23.62,
-   "currentPrice": 268.8,
-   "currentGainPercent": -0.28
-  },
-  {
-   "id": "vaibhav-vyapaar-ipo",
-   "name": "Vaibhav Vyapaar",
-   "type": "sme",
-   "priceBand": [
-    54,
-    54
-   ],
-   "lotSize": 2000,
-   "issueSizeCr": 42.1,
-   "dates": {
-    "open": "2026-10-13",
-    "close": "2026-10-15",
-    "allotment": "2026-10-16",
-    "listing": "2026-10-21"
-   },
-   "subscription": {
-    "qib": 1.6051,
-    "nii": 6.6487,
-    "retail": 2.698,
-    "total": 3.2313
-   },
-   "gmp": 5,
-   "gmpPercent": 5.56,
-   "issuePrice": 54,
-   "listingPrice": 52.9,
-   "listingGainPercent": -2.04,
-   "currentPrice": 53.6,
-   "currentGainPercent": -0.74
-  },
-  {
-   "id": "rkfashion-accessories-ipo",
-   "name": "R.K.Fashion Accessories",
-   "type": "sme",
-   "priceBand": [
-    82,
-    82
-   ],
-   "lotSize": 1600,
-   "issueSizeCr": 34.99,
-   "dates": {
-    "open": "2026-10-05",
-    "close": "2026-10-07",
-    "allotment": "2026-10-08",
-    "listing": "2026-10-12"
-   },
-   "subscription": {
-    "qib": 14.1111,
-    "nii": 1.7729,
-    "retail": 3.1119,
-    "total": 2.6984
-   },
-   "gmp": 15,
-   "gmpPercent": 1.83,
-   "issuePrice": 82,
-   "listingPrice": 80,
-   "listingGainPercent": -2.44,
-   "currentPrice": 35.85,
-   "currentGainPercent": -56.28
-  },
-  {
-   "id": "paramount-syntex-ipo",
-   "name": "Paramount Syntex",
-   "type": "sme",
-   "priceBand": [
-    127,
-    127
-   ],
-   "lotSize": 1000,
-   "issueSizeCr": 81.79,
-   "dates": {
-    "open": "2026-09-30",
-    "close": "2026-10-06",
-    "allotment": "2026-10-07",
-    "listing": "2026-10-09"
-   },
-   "subscription": {
-    "qib": 119.288,
-    "nii": 0.0909,
-    "retail": 1.1014,
-    "total": 1.8785
-   },
-   "gmp": 0,
-   "gmpPercent": 0,
-   "issuePrice": 127,
-   "listingPrice": 115,
-   "listingGainPercent": -9.45,
-   "currentPrice": 50.4,
-   "currentGainPercent": -60.31
-  },
-  {
-   "id": "acme-india-industries-ipo",
-   "name": "Acme India Industries",
-   "type": "sme",
-   "priceBand": [
-    196,
-    196
-   ],
-   "lotSize": 600,
-   "issueSizeCr": 121.69,
-   "dates": {
-    "open": "2026-09-30",
-    "close": "2026-10-06",
-    "allotment": "2026-10-07",
-    "listing": "2026-10-09"
-   },
-   "subscription": {
-    "qib": 137.933,
-    "nii": 196.27,
-    "retail": 85.5,
-    "total": 124.2338
-   },
-   "gmp": 65,
-   "gmpPercent": 21.94,
-   "issuePrice": 196,
-   "listingPrice": 221,
-   "listingGainPercent": 12.76,
-   "currentPrice": 175.25,
-   "currentGainPercent": -10.59
-  },
-  {
-   "id": "tna-solutions-ipo",
-   "name": "TNA Solutions",
-   "type": "sme",
-   "priceBand": [
-    70,
-    70
-   ],
-   "lotSize": 2000,
-   "issueSizeCr": 37.86,
-   "dates": {
-    "open": "2026-09-30",
-    "close": "2026-10-06",
-    "allotment": "2026-10-07",
-    "listing": "2026-10-09"
-   },
-   "subscription": {
-    "qib": 35.6394,
-    "nii": 102.14,
-    "retail": 46.1667,
-    "total": 55.2006
-   },
-   "gmp": 10,
-   "gmpPercent": 0,
-   "issuePrice": 70,
-   "listingPrice": 56,
-   "listingGainPercent": -20,
-   "currentPrice": 42.51,
-   "currentGainPercent": -39.27
+   "gmpPercent": 4.67
   }
  ]
 }

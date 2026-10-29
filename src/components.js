@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { C, DARK, F, STATUS, hue } from './theme';
 
@@ -26,7 +27,16 @@ export const TypeTag = ({ type }) => {
   return <Text style={s.tag}>{type === 'sme' ? 'SME' : 'MAINBOARD'}</Text>;
 };
 
-export function Avatar({ name, size = 44 }) {
+export function Avatar({ name, size = 44, uri }) {
+  const [broken, setBroken] = useState(false);
+  // Company logo when the feed has one; coloured initials otherwise or if it fails to load.
+  if (uri && !broken) {
+    return (
+      <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: '#FFFFFF', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <Image source={{ uri }} style={{ width: size * 0.8, height: size * 0.8 }} resizeMode="contain" onError={() => setBroken(true)} />
+      </View>
+    );
+  }
   if (!name) {
     return (
       <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: C.chip, alignItems: 'center', justifyContent: 'center' }}>
@@ -72,3 +82,15 @@ const s = StyleSheet.create({
   segText: { fontFamily: F.semibold, fontSize: 13, color: C.muted },
   segTextOn: { color: C.text, fontFamily: F.bold },
 });
+// App-wide colour field behind every screen, so glass surfaces have something to refract.
+// Used by src/app/_layout.js: removing it crashes the app on launch.
+export function Backdrop() {
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <LinearGradient colors={DARK ? ['#0B1220', '#0E1626', '#120F1E'] : ['#EEF4FB', '#F5F6FA', '#FBF1EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[DARK ? 'rgba(56,189,248,0.14)' : 'rgba(186,230,253,0.7)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['transparent', DARK ? 'rgba(251,146,60,0.08)' : 'rgba(254,215,170,0.5)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['transparent', DARK ? 'rgba(244,114,182,0.07)' : 'rgba(251,207,232,0.45)']} start={{ x: 0.3, y: 0.5 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+    </View>
+  );
+}

@@ -166,7 +166,7 @@ function IpoCard({ ipo, watched, onWatch }) {
       accessibilityRole="button" accessibilityLabel={`${ipo.name}, ${STATUS[status].label}, price band ${priceBand(ipo.priceBand)}`}>
       <View style={[s.stripe, { backgroundColor: STATUS[status].fg }]} />
       <View style={s.cardTop}>
-        <Avatar name={ipo.name} />
+        <Avatar name={ipo.name} uri={ipo.logo} />
         <View style={{ flex: 1, gap: 3 }}>
           <View style={s.nameRow}>
             <Text style={s.name} numberOfLines={1}>{ipo.name}</Text>
@@ -219,10 +219,10 @@ const s = StyleSheet.create({
   stat: { flex: 1, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)', borderTopColor: DARK ? 'rgba(255,255,255,0.2)' : '#FFFFFF', borderRadius: 18, paddingVertical: 10, paddingHorizontal: 12 },
   statNum: { fontFamily: F.heavy, fontSize: 22, color: C.text },
   statLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
-  tabsBar: { flexGrow: 0 },
-  tabs: { gap: 8, paddingHorizontal: 16, paddingVertical: 14 },
+  tabsBar: { flexGrow: 0, marginVertical: 14 },
+  tabs: { gap: 8, paddingHorizontal: 16 },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999 },
-  pill: { position: 'absolute', left: 0, top: 14, height: 40, borderRadius: 999, backgroundColor: C.accent },
+  pill: { position: 'absolute', left: 0, top: 0, height: 40, borderRadius: 999, backgroundColor: C.accent },
   ticker: { marginTop: 14, marginHorizontal: -18, paddingVertical: 10, backgroundColor: DARK ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.45)', borderTopWidth: 1, borderTopColor: DARK ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.9)' },
   tick: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14 },
   tickDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lime },

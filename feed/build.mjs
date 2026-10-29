@@ -17,6 +17,7 @@ export function toFeedItem(x) {
     dates: { open: x.open_date || undefined, close: x.close_date || undefined, allotment: x.allotment_date || undefined, listing: x.listing_date || undefined },
     subscription: num(x.subscription_total) != null ? { total: num(x.subscription_total) } : undefined,
     listingPrice: num(x.listing_price),
+    logo: x.logo || undefined,
   };
 }
 
@@ -72,7 +73,26 @@ async function fromApifyRun(token) {
     body: JSON.stringify({ reports: ['gmp', 'subscription', 'listingPerformance'], category: 'all' }),
   });
   if (!res.ok) throw new Error(`Apify ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  return mergeApify(await res.json());
+  const ipos = mergeApify(await res.json());
+  const bands = await apifyBands(token);
+  for (const i of ipos) if (bands[i.id]) i.priceBand = bands[i.id];
+  return ipos;
+}
+
+// Chittorgarh's IPO list carries the full band ("78.00 to 82.00"); the GMP report has only the upper price.
+// Newest 40 rows (~$0.12) cover every IPO still open, upcoming or recently listed.
+async function apifyBands(token) {
+  try {
+    const res = await fetch(`https://api.apify.com/v2/acts/data_daemon~india-ipo-tracker/run-sync-get-dataset-items?format=json&clean=true`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ reports: ['ipoList'], category: 'all', maxItems: 40 }),
+    });
+    if (!res.ok) return {};
+    return Object.fromEntries((await res.json()).map((r) => [r.slug, band(r.issuePrice)]).filter(([, b]) => b));
+  } catch {
+    return {}; // keep the single issue price rather than failing the whole feed
+  }
 }
 
 async function fromIpoGuru(key) {
@@ -124,6 +144,7 @@ if (process.argv[2] === '--selfcheck') {
   assert.equal(a.listingPrice, 1383);
   assert.equal(a.currentPrice, 1400);
   assert.deepEqual(fromApify({ slug: 'x', ipoName: 'X', issuePrice: 693 }).priceBand, [693, 693]);
+  assert.deepEqual(band('78.00 to 82.00'), [78, 82]);
   console.log('ok');
 } else {
   await main();
