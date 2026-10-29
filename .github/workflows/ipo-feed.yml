@@ -1,7 +1,7 @@
 name: IPO feed
 on:
   schedule:
-    - cron: '30 4,8,12 * * 1-5' # 10:00, 14:00, 18:00 IST on weekdays (~$0.25/run on Apify)
+    - cron: '30 4,8,12 * * 1-5' # 10:00, 14:00, 18:00 IST on weekdays = 3 calls/day, inside IPO Guru's free 10/day
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,7 +14,6 @@ jobs:
         with: { node-version: 22 }
       - run: node feed/build.mjs
         env:
-          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
           IPOGURU_KEY: ${{ secrets.IPOGURU_KEY }}
       - name: Commit if changed
         run: |

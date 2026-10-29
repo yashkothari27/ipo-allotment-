@@ -113,7 +113,13 @@
     "listing": "2026-11-05"
    },
    "gmp": 0,
-   "gmpPercent": 0
+   "gmpPercent": 0,
+   "subscription": {
+    "qib": 0,
+    "nii": 0,
+    "retail": 0.01,
+    "total": 0.01
+   }
   },
   {
    "id": "bombay-coated-and-special-steels-ipo",
@@ -132,7 +138,13 @@
     "listing": "2026-11-05"
    },
    "gmp": 9,
-   "gmpPercent": 10.98
+   "gmpPercent": 10.98,
+   "subscription": {
+    "qib": 1.41,
+    "nii": 0.14,
+    "retail": 0.36,
+    "total": 0.85
+   }
   },
   {
    "id": "mksons-fine-jewels-ipo",
@@ -151,7 +163,13 @@
     "listing": "2026-11-04"
    },
    "gmp": 15,
-   "gmpPercent": 8.64
+   "gmpPercent": 8.64,
+   "subscription": {
+    "qib": 0.96,
+    "nii": 1.47,
+    "retail": 0.46,
+    "total": 0.82
+   }
   },
   {
    "id": "ajwa-projects-ipo",
@@ -170,7 +188,12 @@
     "listing": "2026-11-04"
    },
    "gmp": 38,
-   "gmpPercent": 13.3
+   "gmpPercent": 13.3,
+   "subscription": {
+    "nii": 0.1,
+    "retail": 1.11,
+    "total": 0.61
+   }
   },
   {
    "id": "carver-roboweld-ipo",
@@ -189,7 +212,13 @@
     "listing": "2026-11-04"
    },
    "gmp": 0,
-   "gmpPercent": 0
+   "gmpPercent": 0,
+   "subscription": {
+    "qib": 0,
+    "nii": 0.76,
+    "retail": 0.3,
+    "total": 0.32
+   }
   },
   {
    "id": "wiscon-industries-ipo",
@@ -208,7 +237,13 @@
     "listing": "2026-11-03"
    },
    "gmp": 0,
-   "gmpPercent": 0
+   "gmpPercent": 0,
+   "subscription": {
+    "qib": 2,
+    "nii": 0.05,
+    "retail": 0.48,
+    "total": 0.88
+   }
   },
   {
    "id": "sfc-environmental-technologies-ipo",
@@ -227,7 +262,13 @@
     "listing": "2026-11-03"
    },
    "gmp": 32,
-   "gmpPercent": 2.73
+   "gmpPercent": 2.73,
+   "subscription": {
+    "qib": 0.61,
+    "nii": 0.89,
+    "retail": 0.48,
+    "total": 0.61
+   }
   },
   {
    "id": "bls-polymers-ipo",
@@ -246,7 +287,13 @@
     "listing": "2026-11-03"
    },
    "gmp": 51,
-   "gmpPercent": 34
+   "gmpPercent": 34,
+   "subscription": {
+    "qib": 12.3,
+    "nii": 209.9,
+    "retail": 57.84,
+    "total": 77.41
+   }
   },
   {
    "id": "eaaa-india-alternatives-ipo",
@@ -265,7 +312,13 @@
     "listing": "2026-11-02"
    },
    "gmp": 121,
-   "gmpPercent": 1.62
+   "gmpPercent": 1.62,
+   "subscription": {
+    "qib": 13.8,
+    "nii": 4.81,
+    "retail": 1.08,
+    "total": 5.51
+   }
   },
   {
    "id": "core4-engineers-ipo",
@@ -284,7 +337,13 @@
     "listing": "2026-10-30"
    },
    "gmp": 0,
-   "gmpPercent": 0
+   "gmpPercent": 0,
+   "subscription": {
+    "qib": 5.06,
+    "nii": 12.26,
+    "retail": 2.72,
+    "total": 5.44
+   }
   },
   {
    "id": "paras-healthcare-ipo",
@@ -303,7 +362,13 @@
     "listing": "2026-10-28"
    },
    "gmp": 96,
-   "gmpPercent": 1.88
+   "gmpPercent": 1.88,
+   "subscription": {
+    "qib": 3.247,
+    "nii": 0.6903,
+    "retail": 2.1008,
+    "total": 2.3413
+   }
   },
   {
    "id": "jio-platforms-ipo",
@@ -341,7 +406,13 @@
     "listing": "2026-10-23"
    },
    "gmp": 30,
-   "gmpPercent": 0.79
+   "gmpPercent": 0.79,
+   "subscription": {
+    "qib": 4.7107,
+    "nii": 1.4459,
+    "retail": 0.769,
+    "total": 3.0978
+   }
   },
   {
    "id": "tonbo-imaging-india-ipo",
@@ -360,7 +431,13 @@
     "listing": "2026-10-23"
    },
    "gmp": 516,
-   "gmpPercent": 64.57
+   "gmpPercent": 64.57,
+   "subscription": {
+    "qib": 293.557,
+    "nii": 156.361,
+    "retail": 31.1113,
+    "total": 132.8059
+   }
   },
   {
    "id": "sahajanand-medical-technologies-ipo",
@@ -379,7 +456,13 @@
     "listing": "2026-10-23"
    },
    "gmp": 43,
-   "gmpPercent": 4.94
+   "gmpPercent": 4.94,
+   "subscription": {
+    "qib": 34.6961,
+    "nii": 14.642,
+    "retail": 3.0389,
+    "total": 14.2061
+   }
   },
   {
    "id": "bonfiglioli-transmissions-ipo",
@@ -398,7 +481,13 @@
     "listing": "2026-10-23"
    },
    "gmp": 178,
-   "gmpPercent": 11.26
+   "gmpPercent": 11.26,
+   "subscription": {
+    "qib": 120.784,
+    "nii": 40.3865,
+    "retail": 5.9028,
+    "total": 46.0515
+   }
   },
   {
    "id": "shellz-india-ipo",
@@ -417,7 +506,13 @@
     "listing": "2026-10-23"
    },
    "gmp": 46,
-   "gmpPercent": 3.91
+   "gmpPercent": 3.91,
+   "subscription": {
+    "qib": 41.918,
+    "nii": 86.4145,
+    "retail": 56.0923,
+    "total": 58.541
+   }
   },
   {
    "id": "ravita-engineering-services-ipo",
@@ -436,7 +531,13 @@
     "listing": "2026-10-22"
    },
    "gmp": 12,
-   "gmpPercent": 0.89
+   "gmpPercent": 0.89,
+   "subscription": {
+    "qib": 13.2096,
+    "nii": 7.4195,
+    "retail": 3.4972,
+    "total": 7.1125
+   }
   },
   {
    "id": "fusion-cx-ipo",
@@ -455,7 +556,13 @@
     "listing": "2026-10-22"
    },
    "gmp": 55,
-   "gmpPercent": 4.67
+   "gmpPercent": 4.67,
+   "subscription": {
+    "qib": 4.2112,
+    "nii": 4.7301,
+    "retail": 5.9864,
+    "total": 4.6755
+   }
   }
  ]
 }

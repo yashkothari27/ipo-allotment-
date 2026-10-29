@@ -5,9 +5,6 @@ import bundled from '../data/ipos.json';
 // e.g. https://raw.githubusercontent.com/<you>/ipo-allotment/main/feed/ipos.json
 export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json';
 
-// Set via: IPO_APIFY_TOKEN=apify_token_xxxx npx expo start
-// (Kept for reference; the app now uses the GitHub feed as primary source.)
-export const IPO_APIFY_TOKEN = undefined;
 
 // ---------------------------------------------------------------------------
 // fetchFeed: tries GitHub URL first, then falls back to bundled data.
