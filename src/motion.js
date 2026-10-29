@@ -30,16 +30,50 @@ export function FadeIn({ index = 0, children, style }) {
 
 // Pressable with 3D tilt effect inspired by CodePen card galleries.
 export function PressScale({ style, children, onPressIn, onPressOut, ...props }) {
-  const v = useRef(new Animated.Value(0)).current; // 0 = resting, 1 = pressed
-  const to = (toValue) => Animated.spring(v, { toValue, stiffness: 350, damping: 30, useNativeDriver: true }).start();
+  const scale = useRef(new Animated.Value(1)).current;
+  const tiltX = useRef(new Animated.Value(0)).current;
+  const tiltY = useRef(new Animated.Value(0)).current;
+  const shadow = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const handlePressIn = () => {
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 0.95, stiffness: 350, damping: 30, useNativeDriver: true }),
+        Animated.timing(tiltX, { toValue: -5, duration: 100, useNativeDriver: true }),
+        Animated.timing(tiltY, { toValue: 5, duration: 100, useNativeDriver: true }),
+        Animated.timing(shadow, { toValue: 4, duration: 100, useNativeDriver: true }),
+      ]).start();
+    };
+    const handlePressOut = () => {
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, stiffness: 350, damping: 30, useNativeDriver: true }),
+        Animated.timing(tiltX, { toValue: 0, duration: 150, useNativeDriver: true }),
+        Animated.timing(tiltY, { toValue: 0, duration: 150, useNativeDriver: true }),
+        Animated.timing(shadow, { toValue: 0, duration: 150, useNativeDriver: true }),
+      ]).start();
+    };
+
+    return () => {
+      // Reset animated values on unmount
+      scale.current = new Animated.Value(1);
+      tiltX.current = new Animated.Value(0);
+      tiltY.current = new Animated.Value(0);
+      shadow.current = new Animated.Value(0);
+    };
+  }, [onPressIn, onPressOut]);
+
   return (
-    <Pressable onPressIn={(e) => { to(1); onPressIn?.(e); }} onPressOut={(e) => { to(0); onPressOut?.(e); }} {...props}>
-      <Animated.View style={[style, { transform: [
-        { perspective: 800 },
-        { scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0.96] }) },
-        { rotateX: v.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-2deg'] }) },
-        { rotateY: v.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '2deg'] }) },
-      ] }]}>
+    <Pressable onPressIn={onPressIn} onPressOut={onPressOut} {...props}>
+      <Animated.View style={[
+        style,
+        { transform: [
+          { scale },
+          { rotateX: tiltX.interpolate({ inputRange: [-5, 5], outputRange: ['-2deg', '2deg'] }) },
+          { rotateY: tiltY.interpolate({ inputRange: [-5, 5], outputRange: ['2deg', '-2deg'] }) },
+        ]},
+        { elevation: shadow.interpolate({ inputRange: [0, 4], outputRange: [2, 6] }) },
+        { transformOrigin: ['center', 'center'] },
+      ]}>
         {children}
       </Animated.View>
     </Pressable>
@@ -60,7 +94,7 @@ export function Shimmer({ style }) {
   return (
     <View style={[{ backgroundColor: C.chip, overflow: 'hidden' }, style]} accessibilityElementsHidden>
       <Animated.View style={[StyleSheet.absoluteFill, { width: '55%', transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [-200, 400] }) }] }]}>
-        <LinearGradient colors={['transparent', shine, 'transparent']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors=['transparent', shine, 'transparent'] start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
       </Animated.View>
     </View>
   );

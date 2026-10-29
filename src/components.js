@@ -4,6 +4,15 @@ import { C, DARK, F, STATUS, hue } from './theme';
 
 export function StatusChip({ status }) {
   const st = STATUS[status];
+  if (!st) {
+    // Fallback if status is undefined
+    return (
+      <View style={[s.chip, { backgroundColor: C.chip, paddingHorizontal: 8, paddingVertical: 3 }]}>
+        <View style={[s.dot, { backgroundColor: C.muted, width: 4, height: 4 }]} />
+        <Text style={[s.chipText, { color: C.muted }]}>{status || '—'}</Text>
+      </View>
+    );
+  }
   return (
     <View style={[s.chip, { backgroundColor: st.bg, paddingHorizontal: 8, paddingVertical: 3 }]}>
       <View style={[s.dot, { backgroundColor: st.fg, width: 4, height: 4 }]} />
@@ -12,11 +21,19 @@ export function StatusChip({ status }) {
   );
 }
 
-export const TypeTag = ({ type }) => (
-  <Text style={s.tag}>{type === 'sme' ? 'SME' : 'MAINBOARD'}</Text>
-);
+export const TypeTag = ({ type }) => {
+  if (!type) return <Text style={s.tag}>—</Text>;
+  return <Text style={s.tag}>{type === 'sme' ? 'SME' : 'MAINBOARD'}</Text>;
+};
 
 export function Avatar({ name, size = 44 }) {
+  if (!name) {
+    return (
+      <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: C.chip, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: F.heavy, fontSize: size * 0.36, color: C.muted }}>?</Text>
+      </View>
+    );
+  }
   const [bg, fg] = hue(name);
   const initials = name.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   return (
@@ -28,14 +45,15 @@ export function Avatar({ name, size = 44 }) {
 
 // Minimal segmented control
 export function Segmented({ options, value, onChange, label }) {
+  if (!options || options.length === 0) return null;
   return (
-    <View style={s.seg} accessibilityRole="tablist" accessibilityLabel={label}>
+    <View style={s.seg} accessibilityRole="tablist" accessibilityLabel={label || 'Options'}>
       {options.map(([k, text]) => {
         const on = value === k;
         return (
-          <Pressable key={k} onPress={() => onChange(k)} style={[s.segItem, on && s.segOn]} hitSlop={4}
+          <Pressable key={k} onPress={() => onChange?.(k)} style={[s.segItem, on && s.segOn]} hitSlop={4}
             accessibilityRole="tab" accessibilityState={{ selected: on }}>
-            <Text style={[s.segText, on && s.segTextOn]}>{text}</Text>
+            <Text style={[s.segText, on && s.segTextOn]}>{text || '—'}</Text>
           </Pressable>
         );
       })}
@@ -54,14 +72,3 @@ const s = StyleSheet.create({
   segText: { fontFamily: F.semibold, fontSize: 13, color: C.muted },
   segTextOn: { color: C.text, fontFamily: F.bold },
 });
-// App-wide colour field behind every screen, so glass surfaces have something to refract.
-export function Backdrop() {
-  return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <LinearGradient colors={DARK ? ['#0B1220', '#0E1626', '#120F1E'] : ['#EEF4FB', '#F5F6FA', '#FBF1EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={[DARK ? 'rgba(56,189,248,0.14)' : 'rgba(186,230,253,0.7)', 'transparent']} start={{ x: 1, y: 0 }} end={{ x: 0.3, y: 0.6 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['transparent', DARK ? 'rgba(251,146,60,0.08)' : 'rgba(254,215,170,0.5)']} start={{ x: 0.6, y: 0.4 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['transparent', DARK ? 'rgba(244,114,182,0.07)' : 'rgba(251,207,232,0.45)']} start={{ x: 0.3, y: 0.5 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-    </View>
-  );
-}
