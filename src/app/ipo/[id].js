@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Feather, Image } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Feather from '@expo/vector-icons/Feather';
 import { C, GLASS, F, NUM, ON_ACCENT, STATUS } from '../../theme';
 import { StatusChip, TypeTag } from '../../components';
 import { fmtDate, fmtINR, ipoStatus, loadIpos, minInvestment, priceBand, withPct } from '../../ipos';
@@ -35,6 +35,9 @@ export default function IpoDetail() {
   const today = new Date().toISOString().slice(0, 10);
   const sub = ipo.subscription;
 
+  // Logo URL from the IPO data
+  const logoUrl = ipo.logo || `https://via.placeholder.com/80/1F2937/FAFAFA?text=${ipo.name?.slice(0,2).toUpperCase()}`;
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={[s.page, { paddingBottom: 120 + insets.bottom }]}>
@@ -42,7 +45,18 @@ export default function IpoDetail() {
           <TypeTag type={ipo.type} />
           <StatusChip status={status} />
         </View>
-        <Text style={s.name} accessibilityRole="header">{ipo.name}</Text>
+        <View style={s.nameRow}>
+          <Image
+            source={{ uri: logoUrl }}
+            style={{ width: 80, height: 80, borderRadius: 12, marginHorizontal: 12, marginTop: 12 }}
+            resizeMode="contain"
+            accessible={false}
+          />
+          <View style={{ flex: 1, gap: 3 }}>
+            <Text style={s.name} numberOfLines={1}>{ipo.name}</Text>
+            {ipo.type === 'sme' && <Text style={s.sme}>SME</Text>}
+          </View>
+        </View>
         <Text style={s.meta}>{ipo.exchange}{ipo.registrar ? `  ·  ${REGISTRAR_NAME[ipo.registrar] || ipo.registrar}` : ''}</Text>
 
         <View style={s.priceBlock}>
@@ -52,16 +66,10 @@ export default function IpoDetail() {
 
         <View style={s.facts}>
           <Fact label="Lot size" value={ipo.lotSize ? `${ipo.lotSize} shares` : '—'} />
-          <View style={s.factRule} />
           <Fact label="Min. investment" value={fmtINR(minInvestment(ipo))} />
-          <View style={s.factRule} />
           <Fact label="Issue size" value={ipo.issueSizeCr ? `₹${ipo.issueSizeCr.toLocaleString('en-IN')} Cr` : '—'} />
-        </View>
-        <View style={s.facts}>
           <Fact label="GMP" value={withPct(ipo.gmp, ipo.gmpPercent)} />
-          <View style={s.factRule} />
           <Fact label="Listing price" value={withPct(ipo.listingPrice, ipo.listingGainPercent)} />
-          <View style={s.factRule} />
           <Fact label="Current price" value={withPct(ipo.currentPrice, ipo.currentGainPercent)} />
         </View>
 
@@ -72,13 +80,13 @@ export default function IpoDetail() {
             const done = d && d <= today;
             const next = !done && TIMELINE.slice(0, i).every(([pk]) => ipo.dates?.[pk] && ipo.dates[pk] <= today);
             return (
-              <View key={k} style={s.tlRow} accessible accessibilityLabel={`${label}, ${fmtDate(d)}${done ? ', done' : next ? ', next' : ''}`}>
+              <View key={k} style={s.tlRow} accessible accessibilityLabel={`${label}, ${fmtDate(d)}${done ? ', done' : next ? ', next' : ''}}>
                 <View style={s.tlRail}>
                   <View style={[s.dot, done && s.dotDone, next && s.dotNext]}>
                     {done && <Feather name="check" size={10} color={ON_ACCENT} />}
                   </View>
-                  {i < TIMELINE.length - 1 && <View style={[s.line, done && s.lineDone]} />}
                 </View>
+                {i < TIMELINE.length - 1 && <View style={[s.line, done && s.lineDone]} />}
                 <Text style={[s.tlLabel, (done || next) && s.tlStrong]}>{label}</Text>
                 <Text style={[s.tlDate, NUM, (done || next) && s.tlStrong]}>{fmtDate(d)}</Text>
               </View>
@@ -117,7 +125,7 @@ export default function IpoDetail() {
         <View style={[s.dock, { paddingBottom: 12 + insets.bottom }]}>
           <Pressable
             style={({ pressed }) => [s.cta, pressed && { opacity: 0.85 }]}
-            accessibilityRole="button"
+            accessibilityRole="button" accessibilityState={{ disabled: false }}
             onPress={() => router.navigate({ pathname: '/allotment', params: { ipo: ipo.name } })}
           >
             <Feather name="check-square" size={18} color={ON_ACCENT} />
@@ -129,31 +137,14 @@ export default function IpoDetail() {
   );
 }
 
-function SubBar({ label, value, max, color }) {
-  const grow = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
-      if (reduce) return grow.setValue(1);
-      Animated.timing(grow, { toValue: 1, duration: 700, easing: Easing.out(Easing.exp), useNativeDriver: true }).start();
-    });
-  }, [grow]);
+function Fact({ label, value }) {
   return (
-    <View style={s.subRow} accessible accessibilityLabel={`${label} subscribed ${value} times`}>
-      <Text style={s.subLabel}>{label}</Text>
-      <View style={s.track}>
-        <Animated.View style={[s.bar, { backgroundColor: color, width: `${(value / max) * 100}%`, transform: [{ scaleX: grow }], transformOrigin: 'left' }]} />
-      </View>
-      <Text style={[s.subVal, NUM]}>{value}×</Text>
+    <View style={s.fact}>
+      <Text style={s.factLabel}>{label}</Text>
+      <Text style={[s.factValue, NUM]} numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
     </View>
   );
 }
-
-const Fact = ({ label, value }) => (
-  <View style={s.fact}>
-    <Text style={s.factLabel}>{label}</Text>
-    <Text style={[s.factValue, NUM]} numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
-  </View>
-);
 
 const s = StyleSheet.create({
   page: { paddingHorizontal: 20, paddingTop: 4 },
@@ -196,4 +187,4 @@ const s = StyleSheet.create({
   missing: { alignItems: 'center', paddingTop: 80, gap: 8 },
   missingTitle: { fontFamily: F.bold, fontSize: 17, color: C.text },
   missingText: { fontFamily: F.regular, fontSize: 14, color: C.muted },
-});
+);
