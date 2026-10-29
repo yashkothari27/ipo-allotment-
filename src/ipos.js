@@ -129,8 +129,6 @@ function mapGitHubIpo(raw) {
 // ---------------------------------------------------------------------------
 // Exported shape: { ipos, source, updatedAt }
 // ---------------------------------------------------------------------------
-export { loadIpos };
 
 // Keep backward-compatible names so screens importing from '../ipos' still work:
 // (the helpers are also named exports from this module, so import * as ipos works.)
-export { ipoStatus, sortIpos, fmtDate, fmtINR, priceBand, withPct, minInvestment };
