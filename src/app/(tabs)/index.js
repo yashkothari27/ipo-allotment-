@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, FlatList, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, FlatList, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
@@ -12,12 +12,19 @@ import { loadCachedIpos, fmtDate, fmtINR, ipoStatus, loadIpos, priceBand, sortIp
 
 const TABS = [['open', 'Open'], ['upcoming', 'Upcoming'], ['closed', 'Closed'], ['listed', 'Listed'], ['watch', 'Watchlist']];
 const TYPES = [['all', 'All'], ['mainboard', 'Mainboard'], ['sme', 'SME']];
+const SORTS = [['default', 'Default'], ['date', 'Date'], ['gmp', 'GMP']];
+const SORT_FN = {
+  date: (a, b) => (b.dates?.open || '').localeCompare(a.dates?.open || ''), // newest first
+  gmp: (a, b) => (b.gmpPercent ?? -Infinity) - (a.gmpPercent ?? -Infinity), // highest GMP % first
+};
 
 export default function IpoList() {
   const insets = useSafeAreaInsets();
   const [feed, setFeed] = useState(null);
   const [tab, setTab] = useState('open');
   const [type, setType] = useState('all');
+  const [sort, setSort] = useState('default');
+  const [q, setQ] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [watch, saveWatch] = useStored('watchlist');
 
@@ -51,7 +58,9 @@ export default function IpoList() {
   const count = (k) => all.filter((i) => ipoStatus(i) === k).length;
   const list = all
     .filter((i) => (tab === 'watch' ? watch.includes(i.id) : ipoStatus(i) === tab))
-    .filter((i) => type === 'all' || i.type === type);
+    .filter((i) => type === 'all' || i.type === type)
+    .filter((i) => !q.trim() || i.name.toLowerCase().includes(q.trim().toLowerCase()));
+  if (SORT_FN[sort]) list.sort(SORT_FN[sort]);
   const ticker = all.filter((i) => ipoStatus(i) === 'open');
   const toggleWatch = (id) => saveWatch(watch.includes(id) ? watch.filter((x) => x !== id) : [...watch, id]);
 
@@ -105,12 +114,27 @@ export default function IpoList() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={load} colors={[C.accent]} tintColor={C.accent} />}
         ListHeaderComponent={
           <View style={{ gap: 12, marginBottom: 4 }}>
+            <View style={s.search}>
+              <Feather name="search" size={17} color={C.muted} />
+              <TextInput style={s.searchInput} value={q} onChangeText={setQ} placeholder="Search IPOs" placeholderTextColor={C.faint}
+                autoCorrect={false} returnKeyType="search" accessibilityLabel="Search IPOs" />
+              {!!q && (
+                <Pressable onPress={() => setQ('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
+                  <Feather name="x-circle" size={17} color={C.muted} />
+                </Pressable>
+              )}
+            </View>
             <View style={s.types}>
               {TYPES.map(([k, label]) => (
                 <Pressable key={k} onPress={() => setType(k)} style={[s.type, type === k && s.typeOn]} accessibilityRole="button" accessibilityState={{ selected: type === k }}>
                   <Text style={[s.typeText, type === k && s.typeTextOn]}>{label}</Text>
                 </Pressable>
               ))}
+              <Pressable onPress={() => setSort(SORTS[(SORTS.findIndex(([k]) => k === sort) + 1) % SORTS.length][0])}
+                style={s.sortBtn} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Sort: ${SORTS.find(([k]) => k === sort)[1]}. Tap to change`}>
+                <Feather name="bar-chart-2" size={14} color={sort === 'default' ? C.muted : C.text} />
+                <Text style={[s.typeText, sort !== 'default' && s.typeTextOn]}>{sort === 'default' ? 'Sort' : SORTS.find(([k]) => k === sort)[1]}</Text>
+              </Pressable>
             </View>
             {feed?.error && (
               <View style={s.banner}>
@@ -129,7 +153,7 @@ export default function IpoList() {
           !feed ? <Skeleton /> : (
             <View style={s.empty}>
               <View style={s.emptyIcon}><Feather name={tab === 'watch' ? 'star' : 'inbox'} size={24} color={C.accent} /></View>
-              <Text style={s.emptyTitle}>{tab === 'watch' ? 'Nothing on your watchlist' : `No ${TABS.find((t) => t[0] === tab)[1].toLowerCase()} IPOs`}</Text>
+              <Text style={s.emptyTitle}>{q.trim() ? `No IPOs match "${q.trim()}"` : tab === 'watch' ? 'Nothing on your watchlist' : `No ${TABS.find((t) => t[0] === tab)[1].toLowerCase()} IPOs`}</Text>
               <Text style={s.emptyText}>{tab === 'watch' ? 'Tap the star on any IPO to keep it here.' : 'Pull down to refresh, or check another tab.'}</Text>
             </View>
           )
@@ -239,6 +263,9 @@ const s = StyleSheet.create({
   tabTextOn: { fontFamily: F.bold, color: ON_ACCENT },
   list: { paddingHorizontal: 16, paddingBottom: 140, gap: 12 },
   vignette: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 150 },
+  search: { ...GLASS, flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 16, paddingHorizontal: 14, minHeight: 46 },
+  searchInput: { flex: 1, fontFamily: F.medium, fontSize: 15, color: C.text, paddingVertical: 10 },
+  sortBtn: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 4 },
   types: { flexDirection: 'row', gap: 16 },
   type: { minHeight: 44, justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
   typeOn: { borderBottomColor: C.accent },

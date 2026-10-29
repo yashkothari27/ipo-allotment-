@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
@@ -55,6 +55,17 @@ export default function Allotment() {
   const shares = won.reduce((n, r) => n + r.allotted, 0);
 
   const off = busy || (pans.length > 0 && !company); // with no PANs the button jumps to the PANs tab
+
+  // Plain-text report for WhatsApp etc.; PANs stay masked.
+  const shareReport = () => {
+    const lines = pans.map((x) => {
+      const r = results[x.pan];
+      const res = r && RESULT[r.status];
+      const apps = r?.apps?.length > 1 ? ` (${r.apps.map((a) => `${a.category || 'App'} ${a.allotted}/${a.applied}`).join(', ')})` : '';
+      return `${panName(x)} ${maskPan(x.pan)}: ${res ? res.text : '-'}${r?.status === 'allotted' ? ` · ${r.allotted} shares` : ''}${apps}`;
+    });
+    Share.share({ message: `${company?.name} allotment\n${won.length} of ${done.length} PANs got shares\n\n${lines.join('\n')}\n\nChecked with IPO Desk` }).catch(() => {});
+  };
 
   const onCheck = async () => {
     setBusy(true);
@@ -122,6 +133,9 @@ export default function Allotment() {
               {won.length ? `${shares} shares in total in ${company?.name}.` : 'Refunds usually reach the bank account within 1–2 working days.'}
             </Text>
           </View>
+          <Pressable onPress={shareReport} hitSlop={8} style={s.shareBtn} accessibilityRole="button" accessibilityLabel="Share allotment report">
+            <Feather name="share-2" size={18} color={C.text} />
+          </Pressable>
         </View>
       )}
 
@@ -192,6 +206,7 @@ const s = StyleSheet.create({
   search: { flexDirection: 'row', alignItems: 'center', gap: 10, ...GLASS, borderRadius: 16, paddingHorizontal: 14, minHeight: 48, marginBottom: 10 },
   searchInput: { flex: 1, fontFamily: F.medium, fontSize: 15, color: C.text, paddingVertical: 10 },
   summary: { flexDirection: 'row', alignItems: 'center', gap: 14, borderRadius: 20, padding: 16, marginTop: 16 },
+  shareBtn: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)' },
   summaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   summaryTitle: { fontFamily: F.heavy, fontSize: 17, color: C.text },
   summaryText: { fontFamily: F.medium, fontSize: 13, lineHeight: 18, color: C.muted, marginTop: 2 },
