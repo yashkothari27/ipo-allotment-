@@ -80,7 +80,7 @@ export default function IpoDetail() {
             const done = d && d <= today;
             const next = !done && TIMELINE.slice(0, i).every(([pk]) => ipo.dates?.[pk] && ipo.dates[pk] <= today);
             return (
-              <View key={k} style={s.tlRow} accessible accessibilityLabel={`${label}, ${fmtDate(d)}${done ? ', done' : next ? ', next' : ''}}>
+              <View key={k} style={s.tlRow} accessible accessibilityLabel={`${label}, ${fmtDate(d)}${done ? ', done' : next ? ', next' : ''}`}>
                 <View style={s.tlRail}>
                   <View style={[s.dot, done && s.dotDone, next && s.dotNext]}>
                     {done && <Feather name="check" size={10} color={ON_ACCENT} />}
@@ -187,4 +187,4 @@ const s = StyleSheet.create({
   missing: { alignItems: 'center', paddingTop: 80, gap: 8 },
   missingTitle: { fontFamily: F.bold, fontSize: 17, color: C.text },
   missingText: { fontFamily: F.regular, fontSize: 14, color: C.muted },
-);
+});

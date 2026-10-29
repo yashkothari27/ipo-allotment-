@@ -7,7 +7,6 @@ export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo
 
 // Set via: IPO_APIFY_TOKEN=apify_token_xxxx npx expo start
 // (Kept for reference; the app now uses the GitHub feed as primary source.)
-export const IPO_APIFY_TOKEN = undefined;
 
 // ---------------------------------------------------------------------------
 // fetchFeed: tries GitHub URL first, then falls back to bundled data.
@@ -54,6 +53,15 @@ export const priceBand = (p) => (!p ? '—' : p[0] === p[1] ? fmtINR(p[0]) : `�
 // ₹264 (23.6%) — price with its % change, the way GMP and listing gains are quoted.
 export const withPct = (n, pct) => (n == null ? '—' : `${fmtINR(n)}${pct != null ? ` (${pct > 0 ? '+' : ''}${pct}%)` : ''}`);
 export const minInvestment =(ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBand[1] * ipo.lotSize : null);
+
+// Load IPOs: GitHub feed first, bundled sample data when offline. Both screens call this.
+export async function loadIpos() {
+  const githubData = await fetchGitHubFeed();
+  if (githubData.ipos && githubData.ipos.length > 0) {
+    return { ipos: githubData.ipos, source: githubData.source, updatedAt: githubData.updatedAt };
+  }
+  return { ipos: bundled.ipos, source: 'bundled', updatedAt: bundled.updatedAt, error: githubData.error };
+}
 
 // ---------------------------------------------------------------------------
 // Map a raw GitHub IPO row into the app's IPO item shape.
@@ -114,8 +122,6 @@ function mapGitHubIpo(raw) {
 // ---------------------------------------------------------------------------
 // Exported shape: { ipos, source, updatedAt }
 // ---------------------------------------------------------------------------
-export { loadIpos };
 
 // Keep backward-compatible names so screens importing from '../ipos' still work:
 // (the helpers are also named exports from this module, so import * as ipos works.)
-export { ipoStatus, sortIpos, fmtDate, fmtINR, priceBand, withPct, minInvestment };
