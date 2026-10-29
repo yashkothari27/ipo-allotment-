@@ -5,15 +5,9 @@ import bundled from '../data/ipos.json';
 // e.g. https://raw.githubusercontent.com/<you>/ipo-allotment/main/feed/ipos.json
 export const IPO_FEED_URL = 'https://raw.githubusercontent.com/yashkothari27/ipo-allotment-/main/feed/ipos.json';
 
-// Apify token – optional. When set, overrides the GitHub feed.
 // Set via: IPO_APIFY_TOKEN=apify_token_xxxx npx expo start
-// (No Apify token needed for the GitHub feed to work.)
+// (Kept for reference; the app now uses the GitHub feed as primary source.)
 export const IPO_APIFY_TOKEN = undefined;
-
-// --- Fallback: bundled data (included in the app) ---
-// Used if neither the GitHub feed nor Apify are available.
-// This contains sample IPOs for development/testing.
-const BUNDLED_IPO_DATA = bundled;
 
 // ---------------------------------------------------------------------------
 // fetchFeed: tries GitHub URL first, then falls back to bundled data.
@@ -24,7 +18,7 @@ export async function fetchGitHubFeed() {
     if (!res.ok) throw new Error(`GitHub ${res.status}`);
     const data = await res.json();
     if (!Array.isArray(data.ipos)) throw new Error('Feed has no "ipos" array');
-    // Filter malformed entries (same logic as original loadIpos)
+    // Drop malformed entries rather than letting one bad row crash the list.
     const ipos = data.ipos.filter((i) => i && typeof i.id === 'string' && typeof i.name === 'string' && (!i.dates || typeof i.dates === 'object')
       && (!i.priceBand || (Array.isArray(i.priceBand) && i.priceBand.every(Number.isFinite))));
     return { ipos, source: 'github', updatedAt: data.updatedAt };
@@ -35,30 +29,52 @@ export async function fetchGitHubFeed() {
 }
 
 // ---------------------------------------------------------------------------
-// loadIpos: priority order
-//   1) GitHub feed (if URL is configured)
-//   2) Apify (if token provided – currently disabled; code kept for future)
-//   3) Bundled sample data (always available)
+// Seven helpers used by screens (kept from original code).
 // ---------------------------------------------------------------------------
-export async function loadIpos() {
-  // 1) Try GitHub feed (primary free source)
-  const githubData = await fetchGitHubFeed();
-  if (githubData.ipos && githubData.ipos.length > 0) {
-    return { ...githubData, source: 'github' };
-  }
 
-  // 2) Apify (disabled – kept for future integration)
-  // if (IPO_APIFY_TOKEN) {
-  //   const apifyData = await loadIposFromApify();
-  //   if (apifyData && apifyData.ipos && apifyData.ipos.length) return apifyData;
-  // }
-
-  // 3) Bundled sample data (development / offline)
-  return { ipos: BUNDLED_IPO_DATA.ipos, source: 'bundled', updatedAt: BUNDLED_IPO_DATA.updatedAt };
+// Status from dates only, so the feed never needs a status field updated by hand.
+export function ipoStatus(ipo, now = new Date()) {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const { open, close, listing } = ipo.dates || {};
+  if (listing && day(listing) <= today) return 'listed';
+  if (close && day(close) < today) return 'closed';
+  if (open && day(open) <= today) return 'open';
+  return 'upcoming';
 }
 
-// Helper: map a raw IPO item from the GitHub feed into the shape the app expects.
+const day = (s) => (s ? new Date(`${s}T00:00:00`) : null);
+
+const ORDER = { open: 0, upcoming: 1, closed: 2, listed: 3 };
+export const sortIpos = (list, now) =>
+  [...list].sort((a, b) => ORDER[ipoStatus(a, now)] - ORDER[ipoStatus(b, now)] || (a.dates?.open || '').localeCompare(b.dates?.open || ''));
+
+export const fmtDate = (s) => (s ? day(s).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—');
+export const fmtINR = (n) => (n == null ? '—' : `₹${Number(n).toLocaleString('en-IN')}`);
+export const priceBand = (p) => (!p ? '—' : p[0] === p[1] ? fmtINR(p[0]) : `₹${p[0]}–${p[1]}`);
+// ₹264 (23.6%) — price with its % change, the way GMP and listing gains are quoted.
+export const withPct = (n, pct) => (n == null ? '—' : `${fmtINR(n)}${pct != null ? ` (${pct > 0 ? '+' : ''}${pct}%)` : ''}`);
+export const minInvestment =(ipo) => (ipo.priceBand && ipo.lotSize ? ipo.priceBand[1] * ipo.lotSize : null);
+
+// ---------------------------------------------------------------------------
+// Load IPOs: priority order
+//   1) GitHub feed (primary free source)
+//   2) Bundled sample data (always available — development / offline)
+// ---------------------------------------------------------------------------
+export async function loadIpos() {
+  // 1) Try GitHub feed first
+  const githubData = await fetchGitHubFeed();
+  if (githubData.ipos && githubData.ipos.length > 0) {
+    return { ipos: githubData.ipos, source: githubData.source, updatedAt: githubData.updatedAt };
+  }
+
+  // 2) Fallback to bundled sample data
+  return { ipos: bundled.ipos, source: 'bundled', updatedAt: bundled.updatedAt };
+}
+
+// ---------------------------------------------------------------------------
+// Map a raw GitHub IPO row into the app's IPO item shape.
 // This mirrors the transformation logic from feed/build.mjs / data_daemon/india-ipo-tracker.
+// ---------------------------------------------------------------------------
 function mapGitHubIpo(raw) {
   const num = (v) => (v == null || v === '' || isNaN(Number(v)) ? undefined : Number(v));
 
@@ -113,26 +129,8 @@ function mapGitHubIpo(raw) {
 // ---------------------------------------------------------------------------
 // Exported shape: { ipos, source, updatedAt }
 // ---------------------------------------------------------------------------
-export async function loadIpos() {
-  const githubData = await fetchGitHubFeed();
-  if (githubData.ipos && githubData.ipos.length > 0) {
-    // Map raw GitHub rows into the app's IPO item shape.
-    const mapped = githubData.ipos.map(mapGitHubIpo);
-    return {
-      ipos: mapped,
-      source: githubData.source,
-      updatedAt: githubData.updatedAt,
-    };
-  }
-
-  // Fallback to bundled data
-  return {
-    ipos: BUNDLED_IPO_DATA.ipos,
-    source: 'bundled',
-    updatedAt: BUNDLED_IPO_DATA.updatedAt,
-  };
-}
-
-// Keep the original exported function name for backward compatibility
-// (existing screens call loadIpos() so we keep it).
 export { loadIpos };
+
+// Keep backward-compatible names so screens importing from '../ipos' still work:
+// (the helpers are also named exports from this module, so import * as ipos works.)
+export { ipoStatus, sortIpos, fmtDate, fmtINR, priceBand, withPct, minInvestment };
