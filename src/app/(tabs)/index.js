@@ -67,8 +67,6 @@ export default function IpoList() {
   return (
     <View style={{ flex: 1 }}>
       <View style={[s.hero, { marginTop: insets.top + 8 }]}>
-        {/* Glass sheen: light catching the top-left of the pane */}
-        <LinearGradient colors={[DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.75)', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.6, y: 0.7 }} style={StyleSheet.absoluteFill} />
         <View style={s.heroTop}>
           <Text style={s.title} accessibilityRole="header">IPO Desk</Text>
           {feed?.updatedAt && <Text style={s.kicker}>Updated {fmtDate(feed.updatedAt)}</Text>}
@@ -100,7 +98,7 @@ export default function IpoList() {
           const on = tab === k;
           return (
             <Pressable key={k} onPress={() => setTab(k)} onLayout={(e) => onTabLayout(k, e.nativeEvent.layout)} style={s.tab} accessibilityRole="tab" accessibilityState={{ selected: on }}>
-              {k === 'watch' && <Feather name="star" size={14} color={on ? ON_ACCENT : C.muted} />}
+              {k === 'watch' && <Feather name="star" size={14} color={on ? C.text : C.muted} />}
               <Text style={[s.tabText, on && s.tabTextOn]}>{label}</Text>
             </Pressable>
           );
@@ -172,7 +170,7 @@ export default function IpoList() {
       />
       {/* Vignette: cards fade into the backdrop as they slide under the floating tab bar. */}
       <View pointerEvents="none" style={s.vignette}>
-        <LinearGradient colors={DARK ? ['rgba(18,15,30,0)', 'rgba(18,15,30,0.85)'] : ['rgba(251,241,238,0)', 'rgba(251,241,238,0.92)']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[C.bg + '00', C.bg]} style={StyleSheet.absoluteFill} />
       </View>
     </View>
   );
@@ -241,35 +239,35 @@ const Skeleton = () => (
             <Shimmer style={{ height: 10, borderRadius: 5, width: '45%' }} />
           </View>
         </View>
-        <Shimmer style={{ height: 58, borderRadius: 14 }} />
+        <Shimmer style={{ height: 58, borderRadius: 12 }} />
       </View>
     ))}
   </View>
 );
 
 const s = StyleSheet.create({
-  hero: { ...GLASS, marginHorizontal: 12, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, borderRadius: 26, overflow: 'hidden' },
+  hero: { ...GLASS, marginHorizontal: 12, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, borderRadius: 12, overflow: 'hidden' },
   heroTop: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   kicker: { fontFamily: F.semibold, fontSize: 12, color: C.muted },
   title: { fontFamily: F.heavy, fontSize: 22, color: C.text, letterSpacing: -0.4 },
   stats: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  stat: { flex: 1, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: DARK ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)', borderTopColor: DARK ? 'rgba(255,255,255,0.2)' : '#FFFFFF', borderRadius: 18, paddingVertical: 8, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'baseline', gap: 6 },
+  stat: { flex: 1, backgroundColor: C.chip, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'baseline', gap: 6 },
   statNum: { fontFamily: F.heavy, fontSize: 18, color: C.text },
   statLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
-  tabsBar: { flexGrow: 0, flexShrink: 0, height: 40, marginVertical: 14 }, // fixed height: Android was collapsing this row and clipping the labels
-  tabs: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 999 },
-  pill: { position: 'absolute', left: 0, top: 0, height: 40, borderRadius: 999, backgroundColor: C.accent },
-  ticker: { marginTop: 10, marginHorizontal: -16, marginBottom: -12, paddingVertical: 8, backgroundColor: DARK ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.45)', borderTopWidth: 1, borderTopColor: DARK ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.9)' },
+  tabsBar: { flexGrow: 0, flexShrink: 0, height: 44, marginVertical: 12 }, // fixed height: Android was collapsing this row and clipping the labels
+  tabs: { gap: 4, padding: 4, marginHorizontal: 16, backgroundColor: C.chip, borderRadius: 10, alignItems: 'center' },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: 14, borderRadius: 8 },
+  pill: { position: 'absolute', left: 0, top: 4, height: 36, borderRadius: 8, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
+  ticker: { marginTop: 10, marginHorizontal: -16, marginBottom: -12, paddingVertical: 8, backgroundColor: C.chip, borderTopWidth: 1, borderTopColor: C.border },
   tick: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14 },
   tickDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lime },
   tickName: { fontFamily: F.semibold, fontSize: 13, color: C.text, maxWidth: 180 },
   tickVal: { fontFamily: F.heavy, fontSize: 13, color: C.lime },
   tabText: { fontFamily: F.semibold, fontSize: 14, color: C.muted },
-  tabTextOn: { fontFamily: F.bold, color: ON_ACCENT },
+  tabTextOn: { fontFamily: F.bold, color: C.text },
   list: { paddingHorizontal: 16, paddingBottom: 140, gap: 12 },
   vignette: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 150 },
-  search: { ...GLASS, flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 16, paddingHorizontal: 14, minHeight: 46 },
+  search: { ...GLASS, flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, paddingHorizontal: 14, minHeight: 46 },
   searchInput: { flex: 1, fontFamily: F.medium, fontSize: 15, color: C.text, paddingVertical: 10 },
   sortBtn: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 4 },
   types: { flexDirection: 'row', gap: 16 },
@@ -279,7 +277,7 @@ const s = StyleSheet.create({
   typeTextOn: { fontFamily: F.bold, color: C.text },
   banner: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: C.warnSoft, borderRadius: 12, padding: 12 },
   bannerText: { flex: 1, fontFamily: F.medium, fontSize: 13, color: C.warn },
-  card: { ...GLASS, borderRadius: 20, padding: 16, paddingLeft: 20, overflow: 'hidden', shadowColor: '#0F172A', shadowOpacity: DARK ? 0 : 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 0 },
+  card: { ...GLASS, borderRadius: 12, padding: 16, paddingLeft: 20, overflow: 'hidden' },
   stripe: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -287,15 +285,15 @@ const s = StyleSheet.create({
   sme: { fontFamily: F.heavy, fontSize: 10, letterSpacing: 0.6, color: STATUS.listed.fg, backgroundColor: STATUS.listed.bg, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, overflow: 'hidden' },
   dates: { fontFamily: F.medium, fontSize: 13, color: C.muted },
   star: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  metrics: { flexDirection: 'row', gap: 8, marginTop: 14, backgroundColor: DARK ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)', borderRadius: 14, padding: 12 },
+  metrics: { flexDirection: 'row', gap: 8, marginTop: 14, backgroundColor: C.chip, borderRadius: 10, padding: 12 },
   mLabel: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   mValue: { fontFamily: F.bold, fontSize: 15, color: C.text, marginTop: 2 },
   cardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },
-  allotBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.accent, borderRadius: 999, paddingHorizontal: 12, minHeight: 34 },
+  allotBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.accent, borderRadius: 8, paddingHorizontal: 12, minHeight: 34 },
   allotBtnText: { fontFamily: F.bold, fontSize: 13, color: ON_ACCENT },
   footNote: { fontFamily: F.medium, fontSize: 12, color: C.muted },
   empty: { alignItems: 'center', paddingVertical: 48, gap: 8 },
-  emptyIcon: { width: 56, height: 56, borderRadius: 18, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  emptyIcon: { width: 56, height: 56, borderRadius: 12, backgroundColor: C.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   emptyTitle: { fontFamily: F.bold, fontSize: 16, color: C.text },
   emptyText: { fontFamily: F.regular, fontSize: 14, color: C.muted, textAlign: 'center' },
   footer: { fontFamily: F.regular, fontSize: 12, color: C.muted, textAlign: 'center' },

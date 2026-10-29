@@ -54,7 +54,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="ipo/[id]" options={{ title: '' }} />
       </Stack>
-      <LinearGradient pointerEvents="none" colors={DARK ? ['rgba(11,18,32,0.95)', 'rgba(11,18,32,0)'] : ['rgba(238,244,251,0.96)', 'rgba(238,244,251,0)']}
+      <LinearGradient pointerEvents="none" colors={[C.bg + 'F2', C.bg + '00']}
         style={[StyleSheet.absoluteFill, { bottom: undefined, height: insets.top + 14 }]} />
       </LockGate>
     </ShareIntentProvider>
